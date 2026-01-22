@@ -1,7 +1,7 @@
 FROM node:20-alpine AS base
 
 # Install dependencies needed for Prisma and Healthchecks
-RUN apk add --no-cache libc6-compat openssl curl
+RUN apk add --no-cache libc6-compat openssl curl wget
 
 WORKDIR /app
 
@@ -37,6 +37,9 @@ ENV HOSTNAME="0.0.0.0"
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Install global prisma to avoid npx download at runtime
+RUN npm install -g prisma
 
 # Copy static assets
 COPY --from=builder /app/public ./public
