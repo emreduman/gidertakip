@@ -17,7 +17,30 @@ export async function GET(
 
     const filePath = join(process.cwd(), 'public', 'uploads', filename);
 
+    console.log(`[DEBUG] Serving file: ${filename}`);
+    console.log(`[DEBUG] Looking at path: ${filePath}`);
+    console.log(`[DEBUG] CWD: ${process.cwd()}`);
+
     if (!existsSync(filePath)) {
+        console.error(`[ERROR] File not found at ${filePath}`);
+
+        // Debug: List directory content
+        try {
+            const dir = join(process.cwd(), 'public', 'uploads');
+            const fs = require('fs');
+            if (fs.existsSync(dir)) {
+                const files = fs.readdirSync(dir);
+                console.log(`[DEBUG] Files in ${dir}:`, files);
+            } else {
+                console.log(`[DEBUG] Directory ${dir} does not exist!`);
+                // Try to find where public might be
+                const rootDir = process.cwd();
+                console.log(`[DEBUG] Root contents:`, fs.readdirSync(rootDir));
+            }
+        } catch (e) {
+            console.error("[DEBUG] Error scanning dir:", e);
+        }
+
         return new NextResponse("File not found", { status: 404 });
     }
 

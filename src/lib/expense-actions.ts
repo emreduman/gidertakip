@@ -70,6 +70,7 @@ async function uploadFile(file: File): Promise<string | null> {
     }
 
     const path = join(uploadDir, filename);
+    console.log(`[DEBUG] Saving file to: ${path}`);
     await writeFile(path, buffer);
 
     return `/uploads/${filename}`;
