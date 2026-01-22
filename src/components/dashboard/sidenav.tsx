@@ -2,30 +2,39 @@ import Link from 'next/link';
 import NavLinks from '@/components/dashboard/nav-links';
 import { PowerIcon, UserCircleIcon } from 'lucide-react';
 import { signOut } from '@/auth';
+import { NotificationBell } from './notification-bell';
 
 export default function SideNav() {
     return (
         <div className="flex h-full flex-col px-3 py-4 md:px-2">
-            <div className="mb-2 flex h-20 items-center justify-between rounded-md bg-blue-600 p-4 md:h-40 md:items-end md:justify-start">
-                <Link href="/" className="w-32 text-white md:w-40">
+            <div className="relative mb-2 flex h-20 items-center justify-between rounded-md bg-blue-600 p-4 md:h-40 md:items-end md:justify-start">
+                <Link href="/" className="w-32 text-white md:w-40 z-10">
                     <span className="text-xl font-bold">GiderTakip</span>
                 </Link>
 
-                {/* Mobile Top Actions: Profile & Logout */}
-                <div className="flex gap-1 md:hidden text-white">
-                    <Link href="/dashboard/profile" className="p-2 hover:bg-blue-500 rounded-full transition-colors">
-                        <UserCircleIcon className="w-6 h-6" />
-                    </Link>
-                    <form
-                        action={async () => {
-                            'use server';
-                            await signOut();
-                        }}
-                    >
-                        <button className="p-2 hover:bg-blue-500 rounded-full transition-colors">
-                            <PowerIcon className="w-6 h-6" />
-                        </button>
-                    </form>
+                {/* Right Side Actions */}
+                <div className="flex items-center gap-1 text-white z-20">
+                    {/* Notification Bell - Visible on both, absolute on desktop */}
+                    <div className="md:absolute md:top-3 md:right-3">
+                        <NotificationBell />
+                    </div>
+
+                    {/* Mobile Only: Profile & Logout */}
+                    <div className="flex gap-1 md:hidden">
+                        <Link href="/dashboard/profile" className="p-2 hover:bg-blue-500 rounded-full transition-colors">
+                            <UserCircleIcon className="w-6 h-6" />
+                        </Link>
+                        <form
+                            action={async () => {
+                                'use server';
+                                await signOut();
+                            }}
+                        >
+                            <button className="p-2 hover:bg-blue-500 rounded-full transition-colors">
+                                <PowerIcon className="w-6 h-6" />
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
