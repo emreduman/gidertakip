@@ -16,7 +16,7 @@ export function AIButton() {
             className="hidden md:flex p-2 rounded-full hover:bg-white/20 transition-all items-center justify-center group"
             title="Yapay Zeka (Coming Soon)"
         >
-            <Sparkles className="w-6 h-6 text-white animate-pulse group-hover:animate-spin" />
+            <Sparkles className="w-8 h-8 text-white animate-pulse group-hover:animate-spin" />
         </button>
     )
 }
