@@ -169,9 +169,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                 percentageChange={percentageChange}
             />
 
-            <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-7">
+            <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-7 w-full max-w-full overflow-hidden">
                 {/* Main Chart */}
-                <div className="col-span-4 rounded-xl border bg-card text-card-foreground shadow">
+                <div className="col-span-4 rounded-xl border bg-card text-card-foreground shadow overflow-hidden">
                     <div className="p-4 md:p-6 pb-2">
                         <h3 className="tracking-tight text-sm font-medium">Harcama Trendi</h3>
                     </div>
@@ -181,9 +181,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                 </div>
 
                 {/* Right Column: Recent & Categories */}
-                <div className="col-span-3 space-y-4 md:space-y-6">
+                <div className="col-span-3 space-y-4 md:space-y-6 w-full max-w-full overflow-hidden">
                     {/* Top Categories */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6">
+                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6 overflow-hidden">
                         <h3 className="font-semibold mb-4 text-sm md:text-base">En Çok Harcanan Kategoriler</h3>
                         {topCategories.length === 0 ? (
                             <p className="text-sm text-gray-500">Veri yok.</p>
@@ -204,7 +204,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6">
+                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6 overflow-hidden">
                         <h3 className="font-semibold mb-4 text-sm md:text-base">Son Aktiviteler</h3>
                         {recentExpenses.length === 0 ? (
                             <p className="text-sm text-gray-500">Bu dönemde aktivite yok.</p>
