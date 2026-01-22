@@ -96,24 +96,33 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                     forms.map((form) => {
                         const totalAmount = form.expenses.reduce((sum, e) => sum + Number(e.amount), 0);
                         return (
-                            <div key={form.id} className="grid grid-cols-2 md:grid-cols-5 gap-y-2 gap-x-4 p-4 border-b last:border-0 items-center hover:bg-gray-50 transition-colors">
-                                <div className="col-span-2 md:col-span-1">
-                                    <div className="font-medium text-gray-900">{form.user?.name || 'Bilinmeyen Kullanıcı'}</div>
-                                    <div className="text-xs text-gray-500">{form.user?.email}</div>
+                            <div key={form.id} className="flex flex-col md:grid md:grid-cols-5 gap-y-2 gap-x-4 p-4 border-b last:border-0 md:items-center hover:bg-gray-50 transition-colors">
+                                <div className="md:col-span-1">
+                                    <div className="flex justify-between items-start">
+                                        <div className="font-medium text-gray-900">{form.user?.name || 'Bilinmeyen Kullanıcı'}</div>
+                                        <div className="md:hidden font-mono text-xs text-gray-400 bg-gray-100 px-1 py-0.5 rounded">
+                                            {form.id.slice(0, 8)}...
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-gray-500 truncate">{form.user?.email}</div>
                                 </div>
-                                <div className="text-sm text-gray-600">
-                                    <span className="md:hidden font-bold text-gray-700 block text-xs">Tarih</span>
-                                    {new Date(form.submittedAt || form.createdAt).toLocaleDateString('tr-TR')}
+
+                                <div className="text-sm text-gray-600 flex md:block justify-between mt-1 md:mt-0">
+                                    <span className="md:hidden font-bold text-gray-700 text-xs mr-2">Tarih:</span>
+                                    <span>{new Date(form.submittedAt || form.createdAt).toLocaleDateString('tr-TR')}</span>
                                 </div>
-                                <div className="font-bold text-gray-900">
-                                    <span className="md:hidden font-bold text-gray-700 block text-xs">Tutar</span>
-                                    ₺{totalAmount.toFixed(2)}
+
+                                <div className="font-bold text-gray-900 flex md:block justify-between">
+                                    <span className="md:hidden font-bold text-gray-700 text-xs mr-2">Tutar:</span>
+                                    <span>₺{totalAmount.toFixed(2)}</span>
                                 </div>
-                                <div className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded w-fit">
+
+                                <div className="hidden md:block font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded w-fit">
                                     {form.id.slice(0, 8)}...
                                 </div>
-                                <div>
-                                    <div className="flex items-center gap-2 justify-end md:justify-start">
+
+                                <div className="flex justify-end md:justify-start mt-2 md:mt-0">
+                                    <div className="flex items-center gap-2">
                                         <Link href={`/dashboard/accounting/${form.id}`}>
                                             <Button size="sm" variant="outline" className="h-8">İncele</Button>
                                         </Link>
@@ -136,7 +145,8 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                         <h3 className="text-sm font-medium text-gray-900">Kayıt Bulunamadı</h3>
                         <p className="text-sm text-gray-500 mt-1">Bu kategoride gösterilecek masraf formu yok.</p>
                     </div>
-                )}
+                )
+                }
             </div>
         </div>
     )

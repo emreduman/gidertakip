@@ -36,20 +36,42 @@ export default async function FormsPage() {
                     // Calculate dynamically
                     const totalAmount = form.expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
                     return (
-                        <div key={form.id} className="grid grid-cols-2 md:grid-cols-5 gap-y-2 gap-x-4 p-4 border-b last:border-0 items-center">
-                            <div className="font-mono text-xs text-gray-500 col-span-2 md:col-span-1">
-                                <span className="md:hidden font-bold text-gray-700 mr-2">ID:</span>
-                                {form.id.slice(0, 8)}...
+                        <div key={form.id} className="flex flex-col md:grid md:grid-cols-5 gap-y-3 gap-x-4 p-4 border-b last:border-0 md:items-center hover:bg-gray-50 transition-colors">
+                            {/* Mobile Top Row: ID and Status */}
+                            <div className="flex justify-between items-center md:block md:col-span-1">
+                                <div className="font-mono text-xs text-gray-500">
+                                    <span className="md:hidden font-bold text-gray-700 mr-2">ID:</span>
+                                    {form.id.slice(0, 8)}...
+                                </div>
+                                <div className="md:hidden">
+                                    <span className={clsx(
+                                        "px-2 py-1 rounded text-xs font-medium",
+                                        {
+                                            'bg-yellow-100 text-yellow-800': form.status === 'SUBMITTED',
+                                            'bg-green-100 text-green-800': form.status === 'APPROVED',
+                                            'bg-red-100 text-red-800': form.status === 'REJECTED',
+                                        }
+                                    )}>
+                                        {form.status === 'SUBMITTED' ? 'Bekliyor' :
+                                            form.status === 'APPROVED' ? 'Onaylandı' : 'Reddedildi'}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="text-sm">
-                                <span className="md:hidden font-bold text-gray-700 block text-xs">Tarih</span>
+
+                            {/* Date */}
+                            <div className="text-sm text-gray-600">
+                                <span className="md:hidden font-bold text-gray-700 mr-2 text-xs">Tarih:</span>
                                 {new Date(form.createdAt).toLocaleDateString('tr-TR')}
                             </div>
-                            <div className="font-bold">
-                                <span className="md:hidden font-bold text-gray-700 block text-xs">Tutar</span>
+
+                            {/* Amount */}
+                            <div className="font-bold text-gray-900">
+                                <span className="md:hidden font-bold text-gray-700 mr-2 text-xs">Tutar:</span>
                                 ₺{totalAmount.toFixed(2)}
                             </div>
-                            <div>
+
+                            {/* Desktop Status (Hidden on Mobile) */}
+                            <div className="hidden md:block">
                                 <span className={clsx(
                                     "px-2 py-1 rounded text-xs font-medium",
                                     {
@@ -62,8 +84,10 @@ export default async function FormsPage() {
                                         form.status === 'APPROVED' ? 'Onaylandı' : 'Reddedildi'}
                                 </span>
                             </div>
-                            <div>
-                                <div className="flex items-center gap-2 justify-end md:justify-start">
+
+                            {/* Actions */}
+                            <div className="flex justify-end md:justify-start mt-2 md:mt-0">
+                                <div className="flex items-center gap-2">
                                     <Link href={`/dashboard/forms/${form.id}`} className="text-blue-600 hover:underline text-sm font-medium">
                                         Detay
                                     </Link>
