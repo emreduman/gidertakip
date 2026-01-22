@@ -92,7 +92,7 @@ export function NotificationBell() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-[calc(100vw-40px)] sm:w-80 md:w-96 rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right">
+                <div className="fixed left-4 right-4 top-24 w-auto md:absolute md:inset-auto md:right-0 md:mt-2 md:w-96 rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-[100] overflow-hidden transform origin-top-right">
                     <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
                         <h3 className="text-sm font-semibold text-gray-900">Bildirimler</h3>
                         {unreadCount > 0 && (
