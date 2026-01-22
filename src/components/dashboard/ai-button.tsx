@@ -1,6 +1,5 @@
 'use client';
 
-import { Globe } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function AIButton() {
@@ -17,22 +16,22 @@ export function AIButton() {
             title="Yapay Zeka (Coming Soon)"
         >
             {/* Hover Ripples */}
-            <div className="absolute inset-0 rounded-full border border-blue-400 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_ease-out_infinite]" />
-            <div className="absolute inset-0 rounded-full border border-cyan-300 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_ease-out_infinite_0.5s]" />
+            <div className="absolute inset-0 rounded-full border-2 border-cyan-300/30 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+            <div className="absolute inset-0 rounded-full border-2 border-purple-400/30 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite_0.4s]" />
 
-            {/* Ambient Glow */}
-            <div className="absolute inset-2 bg-blue-500 rounded-full blur-xl opacity-50 group-hover:opacity-80 animate-pulse transition-opacity duration-500" />
+            {/* Siri Orb Container */}
+            <div className="relative w-12 h-12 rounded-full transform group-hover:scale-110 transition-transform duration-300 flex items-center justify-center overflow-hidden bg-black/20 backdrop-blur-sm shadow-xl border border-white/10">
 
-            {/* 3D Sphere Container */}
-            <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 via-blue-600 to-indigo-900 shadow-[inset_-2px_-2px_6px_rgba(0,0,0,0.4),inset_2px_2px_6px_rgba(255,255,255,0.4)] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 overflow-hidden">
-                {/* Rotating Overlay/Texture (The Globe Wireframe) */}
-                <Globe className="w-full h-full p-0.5 text-cyan-100/80 animate-[spin_6s_linear_infinite]" strokeWidth={1.2} />
+                {/* Fluid Rotating Gradients */}
+                <div className="absolute -inset-[100%] bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 blur-xl opacity-80 animate-[spin_3s_linear_infinite]" />
+                <div className="absolute -inset-[100%] bg-gradient-to-t from-pink-500 via-purple-500 to-cyan-500 blur-xl opacity-60 animate-[spin_4s_linear_infinite_reverse] mix-blend-overlay" />
 
-                {/* Shadow Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/30 rounded-full" />
+                {/* Inner Glow/Core */}
+                <div className="absolute inset-1 bg-white/30 rounded-full blur-md" />
 
-                {/* Specular Highlight (The 'Glass' look) */}
-                <div className="absolute top-1.5 left-2 w-5 h-2.5 bg-white/40 blur-[2px] rounded-full -rotate-12" />
+                {/* Glossy Reflection */}
+                <div className="absolute inset-0 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)]" />
+                <div className="absolute top-2 left-3 w-5 h-3 bg-white/80 blur-[3px] rounded-full -rotate-45" />
             </div>
         </button>
     )
