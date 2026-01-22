@@ -9,7 +9,9 @@ import { useEffect, useState } from "react";
 import { getFormDetails } from "@/lib/form-actions";
 import { formatCurrency } from "@/lib/utils";
 
-export default function FormSuccessPage() {
+import { Suspense } from 'react';
+
+function FormSuccessContent() {
     const searchParams = useSearchParams();
     const formId = searchParams.get('id');
     const [formData, setFormData] = useState<any>(null);
@@ -351,5 +353,17 @@ export default function FormSuccessPage() {
                 <p>IBAN: {formData.user.iban ? `**** ${formData.user.iban.slice(-4)}` : 'Tanımlı Değil'}</p>
             </div>
         </div>
+    );
+}
+
+export default function FormSuccessPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+            </div>
+        }>
+            <FormSuccessContent />
+        </Suspense>
     );
 }
