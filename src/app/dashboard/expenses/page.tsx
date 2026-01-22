@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 import { ExpenseHistoryFilter } from "@/components/expenses/expense-history-filter"
 import { ExpenseGroup } from "@/components/expenses/expense-group"
 import { ExportButton } from "@/components/expenses/export-button"
@@ -55,7 +56,10 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
                 <div className="flex gap-2">
                     <ExportButton />
                     <Link href="/dashboard/expenses/create">
-                        <Button>+ Yeni Harcama</Button>
+                        <Button className="hidden md:flex">+ Yeni Harcama</Button>
+                        <Button className="md:hidden fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl z-50 p-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700">
+                            <Plus className="h-8 w-8" />
+                        </Button>
                     </Link>
                 </div>
             </div>

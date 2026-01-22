@@ -15,7 +15,7 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-white text-gray-500 font-medium border-b text-xs uppercase">
+                    <thead className="bg-white text-gray-500 font-medium border-b text-xs uppercase hidden md:table-header-group">
                         <tr>
                             <th className="px-4 py-2">Gün</th>
                             <th className="px-4 py-2 hidden sm:table-cell">Fiş</th>
@@ -29,15 +29,34 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                     </thead>
                     <tbody className="divide-y">
                         {expenses.map(expense => (
-                            <tr key={expense.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 w-[100px]">
-                                    <div className="font-bold text-lg text-gray-700">
-                                        {new Date(expense.date).getDate()}
+                            <tr key={expense.id} className="hover:bg-gray-50 flex flex-col md:table-row p-4 md:p-0 border-b md:border-none relative">
+                                {/* Mobile Header for Day */}
+                                <td className="md:px-4 md:py-3 w-full md:w-auto flex justify-between md:table-cell items-center mb-2 md:mb-0">
+                                    <div className="flex items-center gap-3">
+                                        <div className="font-bold text-lg text-gray-700 bg-gray-100 w-10 h-10 flex items-center justify-center rounded">
+                                            {new Date(expense.date).getDate()}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xs text-gray-500 md:hidden">{new Date(expense.date).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}</span>
+                                            <span className="text-sm font-medium text-gray-900 md:hidden">{expense.merchant}</span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-gray-400">
-                                        {new Date(expense.date).toLocaleDateString('tr-TR', { weekday: 'short' })}
+                                    {/* Mobile Amount & Status */}
+                                    <div className="md:hidden text-right">
+                                        <div className="font-bold text-gray-900">₺{Number(expense.amount).toFixed(2)}</div>
+                                        <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium mt-1 ${expense.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                            expense.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                                expense.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
+                                                    'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                            {expense.status === 'APPROVED' ? 'Onaylandı' :
+                                                expense.status === 'REJECTED' ? 'Reddedildi' :
+                                                    expense.status === 'SUBMITTED' ? 'Formda' : 'Bekliyor'}
+                                        </span>
                                     </div>
                                 </td>
+
+                                {/* Desktop Only Columns */}
                                 <td className="px-4 py-3 hidden sm:table-cell">
                                     {expense.receiptUrl ? (
                                         <a
@@ -60,11 +79,14 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                     </span>
                                 </td>
                                 <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate hidden xl:table-cell" title={expense.description || ''}>{expense.description}</td>
-                                <td className="px-4 py-3 text-right font-bold text-gray-900">
+
+                                {/* Desktop Amount */}
+                                <td className="px-4 py-3 text-right font-bold text-gray-900 hidden md:table-cell">
                                     <div>₺{Number(expense.amount).toFixed(2)}</div>
-                                    <div className="md:hidden text-xs text-gray-500 truncate max-w-[100px]">{expense.merchant}</div>
                                 </td>
-                                <td className="px-4 py-3">
+
+                                {/* Desktop Status */}
+                                <td className="px-4 py-3 hidden md:table-cell">
                                     <span className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${expense.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
                                         expense.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
                                             expense.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
@@ -75,7 +97,23 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                                 expense.status === 'SUBMITTED' ? 'Formda' : 'Bekliyor'}
                                     </span>
                                 </td>
-                                <td className="px-4 py-3">
+
+                                {/* Actions - Mobile: Absolute Position or Row? Row is better for touch. */}
+                                <td className="md:px-4 md:py-3 w-full md:w-auto flex justify-between md:table-cell items-center mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-none border-gray-100">
+                                    {/* Mobile Receipt Link */}
+                                    <div className="md:hidden">
+                                        {expense.receiptUrl ? (
+                                            <a
+                                                href={expense.receiptUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-xs"
+                                            >
+                                                <FileText className="h-4 w-4" /> Fişi Gör
+                                            </a>
+                                        ) : <span className="text-xs text-gray-400">Fiş Yok</span>}
+                                    </div>
+
                                     <ExpenseActionsCell expense={{
                                         ...expense,
                                         amount: Number(expense.amount),
