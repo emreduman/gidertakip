@@ -87,7 +87,12 @@ export async function createExpense(prevState: any, formData: FormData) {
     const category = formData.get('category') as string
     const description = formData.get('description') as string
     const merchant = formData.get('merchant') as string
-    const receiptFile = formData.get('receipt') as File;
+
+    // Check both standard and camera inputs
+    const file1 = formData.get('receipt') as File;
+    const file2 = formData.get('camera_receipt') as File;
+    const receiptFile = (file1 && file1.size > 0) ? file1 : file2;
+
     const targetUserId = formData.get('targetUserId') as string;
 
     const warnings = formData.get('warnings') as string;

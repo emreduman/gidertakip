@@ -6,7 +6,7 @@ import { checkExpensePolicy } from "@/lib/policy-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, AlertTriangle } from "lucide-react"
+import { Loader2, AlertTriangle, Camera } from "lucide-react"
 
 const initialState = {
     message: '',
@@ -156,16 +156,50 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                     )}
 
                     {/* File Upload */}
-                    <div className="space-y-2">
+                    {/* File Upload */}
+                    <div className="space-y-3">
                         <Label htmlFor="receipt">Fiş/Fatura Yükle (AI ile Otomatik Doldur)</Label>
-                        <div className="flex items-center gap-2">
-                            <Input id="receipt" name="receipt" type="file" accept="image/*" onChange={handleFileChange} />
-                            <Button type="button" onClick={handleParse} disabled={!file || isParsing}>
-                                {isParsing ? 'Okunuyor...' : 'AI ile Oku'}
+
+                        <div className="flex gap-2">
+                            {/* Camera Button for Mobile */}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => document.getElementById('camera_receipt')?.click()}
+                                className="whitespace-nowrap gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 border-blue-200"
+                            >
+                                <Camera className="h-4 w-4" />
+                                Fotoğraf Çek
                             </Button>
+
+                            {/* Standard Input */}
+                            <Input
+                                id="receipt"
+                                name="receipt"
+                                type="file"
+                                accept="image/*,application/pdf"
+                                onChange={handleFileChange}
+                                className="flex-1"
+                            />
                         </div>
+
+                        {/* Hidden Input for Camera Capture */}
+                        <input
+                            type="file"
+                            id="camera_receipt"
+                            name="camera_receipt"
+                            accept="image/*"
+                            capture="environment"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
+
+                        <Button type="button" onClick={handleParse} disabled={!file || isParsing} className="w-full">
+                            {isParsing ? 'Okunuyor...' : 'AI ile Oku'}
+                        </Button>
+
                         <p className="text-xs text-gray-500">
-                            Fiş fotoğrafını yükleyip "AI ile Oku" butonuna basarsanız bilgiler otomatik doldurulur.
+                            Fiş fotoğrafını çekip veya yükleyip "AI ile Oku" butonuna basarsanız bilgiler otomatik doldurulur.
                         </p>
                     </div>
 
