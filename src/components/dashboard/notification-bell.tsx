@@ -80,10 +80,10 @@ export function NotificationBell() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggle}
-                className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
+                className="relative p-2 rounded-full hover:bg-white/10 md:hover:bg-gray-100 transition-colors"
                 aria-label="Bildirimler"
             >
-                <Bell className="w-6 h-6 text-white md:text-white" />
+                <Bell className="w-6 h-6 text-white md:text-gray-600" />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white md:ring-slate-50">
                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -92,7 +92,7 @@ export function NotificationBell() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-[85vw] sm:w-80 md:w-96 rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right">
+                <div className="absolute right-0 mt-2 w-[calc(100vw-40px)] sm:w-80 md:w-96 rounded-lg bg-white shadow-xl ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right">
                     <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
                         <h3 className="text-sm font-semibold text-gray-900">Bildirimler</h3>
                         {unreadCount > 0 && (
