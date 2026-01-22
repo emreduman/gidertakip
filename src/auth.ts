@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma"
 import { authConfig } from "./auth.config"
 
 async function getUser(email: string) {
+    'use server'
     try {
         const user = await prisma.user.findUnique({ where: { email } })
         return user
