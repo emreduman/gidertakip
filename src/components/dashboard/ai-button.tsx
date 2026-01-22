@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 export function AIButton() {
     const handleClick = () => {
         toast.info("Çok yakında", {
-            description: "Yapay zeka özellikleriyle sizlerle!"
+            description: <span className="bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">Yapay zeka özellikleriyle sizlerle!</span>
         });
     }
 
