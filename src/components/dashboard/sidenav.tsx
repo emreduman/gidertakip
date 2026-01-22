@@ -3,6 +3,7 @@ import NavLinks from '@/components/dashboard/nav-links';
 import { PowerIcon, UserCircleIcon } from 'lucide-react';
 import { signOut } from '@/auth';
 import { NotificationBell } from './notification-bell';
+import { AIButton } from './ai-button';
 
 export default function SideNav() {
     return (
@@ -14,8 +15,11 @@ export default function SideNav() {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-1 text-white z-20">
-                    {/* Notification Bell - Visible on both, absolute on desktop */}
-                    <div className="md:absolute md:top-3 md:right-3">
+
+                    {/* Desktop & Mobile Actions Group */}
+                    {/* On Desktop: Absolute Top Right. On Mobile: Flex flow */}
+                    <div className="md:absolute md:top-3 md:right-3 flex gap-2 items-center">
+                        <AIButton />
                         <NotificationBell />
                     </div>
 
