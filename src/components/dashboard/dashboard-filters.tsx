@@ -32,11 +32,11 @@ export function DashboardFilters() {
     const years = [2024, 2025, 2026, 2027]; // You could generate this dynamically
 
     return (
-        <div className="flex flex-wrap items-center gap-2 p-2 bg-white rounded-lg border shadow-sm mb-4">
-            <span className="text-sm font-medium text-gray-500 ml-2">Filtrele:</span>
+        <div className="flex items-center gap-2 p-2 bg-white rounded-lg border shadow-sm mb-4 overflow-x-auto no-scrollbar">
+            <span className="text-sm font-medium text-gray-500 ml-2 shrink-0">Filtrele:</span>
 
             <Select value={currentYear} onValueChange={handleYearChange}>
-                <SelectTrigger className="w-[120px] h-9">
+                <SelectTrigger className="w-[100px] h-9">
                     <SelectValue placeholder="Yıl" />
                 </SelectTrigger>
                 <SelectContent>
@@ -47,7 +47,7 @@ export function DashboardFilters() {
             </Select>
 
             <Select value={currentPeriod} onValueChange={handlePeriodChange}>
-                <SelectTrigger className="w-[150px] h-9">
+                <SelectTrigger className="w-[140px] h-9">
                     <SelectValue placeholder="Dönem" />
                 </SelectTrigger>
                 <SelectContent>
@@ -62,7 +62,7 @@ export function DashboardFilters() {
             </Select>
 
             {(currentPeriod !== 'all' || currentYear !== new Date().getFullYear().toString()) && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-2 text-gray-500">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-2 text-gray-500 shrink-0">
                     <FilterX className="w-4 h-4 mr-1" />
                     Temizle
                 </Button>

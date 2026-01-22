@@ -164,34 +164,34 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                 percentageChange={percentageChange}
             />
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+            <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-7">
                 {/* Main Chart */}
                 <div className="col-span-4 rounded-xl border bg-card text-card-foreground shadow">
-                    <div className="p-6 pb-2">
+                    <div className="p-4 md:p-6 pb-2">
                         <h3 className="tracking-tight text-sm font-medium">Harcama Trendi</h3>
                     </div>
-                    <div className="p-6 pt-0 pl-2">
+                    <div className="p-4 md:p-6 pt-0 pl-2">
                         <OverviewChart data={chartData} />
                     </div>
                 </div>
 
                 {/* Right Column: Recent & Categories */}
-                <div className="col-span-3 space-y-6">
+                <div className="col-span-3 space-y-4 md:space-y-6">
                     {/* Top Categories */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
-                        <h3 className="font-semibold mb-4">En Çok Harcanan Kategoriler</h3>
+                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6">
+                        <h3 className="font-semibold mb-4 text-sm md:text-base">En Çok Harcanan Kategoriler</h3>
                         {topCategories.length === 0 ? (
                             <p className="text-sm text-gray-500">Veri yok.</p>
                         ) : (
                             <div className="space-y-3">
                                 {topCategories.map((cat, idx) => (
 
-                                    <div key={cat.name} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-500" style={{ opacity: 1 - (idx * 0.15) }} />
-                                            <span className="text-sm font-medium">{cat.name}</span>
+                                    <div key={cat.name} className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                                            <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" style={{ opacity: 1 - (idx * 0.15) }} />
+                                            <span className="text-sm font-medium truncate">{cat.name}</span>
                                         </div>
-                                        <div className="text-sm font-bold">{formatCurrency(cat.value)}</div>
+                                        <div className="text-sm font-bold whitespace-nowrap">{formatCurrency(cat.value)}</div>
                                     </div>
                                 ))}
                             </div>
@@ -199,19 +199,19 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
-                        <h3 className="font-semibold mb-4">Son Aktiviteler</h3>
+                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6">
+                        <h3 className="font-semibold mb-4 text-sm md:text-base">Son Aktiviteler</h3>
                         {recentExpenses.length === 0 ? (
                             <p className="text-sm text-gray-500">Bu dönemde aktivite yok.</p>
                         ) : (
                             <div className="space-y-4">
                                 {recentExpenses.map(expense => (
-                                    <div key={expense.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-sm truncate max-w-[150px]">{expense.merchant || 'Bilinmeyen'}</span>
-                                            <span className="text-xs text-gray-500">{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
+                                    <div key={expense.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0 gap-2">
+                                        <div className="flex flex-col min-w-0 flex-1">
+                                            <span className="font-medium text-sm truncate">{expense.merchant || 'Bilinmeyen'}</span>
+                                            <span className="text-xs text-gray-500 truncate">{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
                                         </div>
-                                        <div className="font-bold text-sm text-red-600">
+                                        <div className="font-bold text-sm text-red-600 whitespace-nowrap">
                                             -{formatCurrency(Number(expense.amount))}
                                         </div>
                                     </div>
