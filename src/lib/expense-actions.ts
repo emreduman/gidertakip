@@ -73,7 +73,7 @@ async function uploadFile(file: File): Promise<string | null> {
     console.log(`[DEBUG] Saving file to: ${path}`);
     await writeFile(path, buffer);
 
-    return `/api/receipts/${filename}`;
+    return `/uploads/${filename}`;
 }
 
 export async function createExpense(prevState: any, formData: FormData) {
