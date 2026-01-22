@@ -42,10 +42,10 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
 
     return (
         <div className="space-y-6">
-            <div className="flex space-x-2 border-b">
+            <div className="flex space-x-2 border-b overflow-x-auto pb-1 no-scrollbar">
                 <button
                     onClick={() => setActiveTab('pending')}
-                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'pending'
+                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'pending'
                         ? "border-orange-500 text-orange-600 font-medium"
                         : "border-transparent text-gray-500 hover:text-gray-700"
                         }`}
@@ -58,7 +58,7 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                 </button>
                 <button
                     onClick={() => setActiveTab('approved')}
-                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'approved'
+                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'approved'
                         ? "border-green-500 text-green-600 font-medium"
                         : "border-transparent text-gray-500 hover:text-gray-700"
                         }`}
@@ -71,7 +71,7 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                 </button>
                 <button
                     onClick={() => setActiveTab('rejected')}
-                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors ${activeTab === 'rejected'
+                    className={`flex items-center gap-2 px-4 py-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'rejected'
                         ? "border-red-500 text-red-600 font-medium"
                         : "border-transparent text-gray-500 hover:text-gray-700"
                         }`}

@@ -30,18 +30,19 @@ export function OverviewChart({ data }: OverviewChartProps) {
                     <XAxis
                         dataKey="name"
                         stroke="#888888"
-                        fontSize={12}
+                        fontSize={11}
                         tickLine={false}
                         axisLine={false}
                         tickMargin={10}
-                        interval={0}
+                        minTickGap={10}
                         tickFormatter={(value: any) => String(value).slice(0, 3)}
                     />
                     <YAxis
                         stroke="#888888"
-                        fontSize={12}
+                        fontSize={11}
                         tickLine={false}
                         axisLine={false}
+                        width={40} // Reserve consistent width
                         tickFormatter={(value) => `₺${value}`}
                     />
                     <Tooltip
