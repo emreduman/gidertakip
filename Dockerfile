@@ -1,7 +1,7 @@
 FROM node:20-alpine AS base
 
-# Install dependencies needed for Prisma
-RUN apk add --no-cache libc6-compat openssl
+# Install dependencies needed for Prisma and Healthchecks
+RUN apk add --no-cache libc6-compat openssl curl
 
 WORKDIR /app
 
