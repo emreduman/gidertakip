@@ -25,7 +25,7 @@ export default async function FormsPage() {
             </div>
 
             <div className="bg-white rounded-md border shadow-sm">
-                <div className="grid grid-cols-5 gap-4 p-4 font-medium border-b bg-gray-50">
+                <div className="hidden md:grid grid-cols-5 gap-4 p-4 font-medium border-b bg-gray-50">
                     <div>Form ID</div>
                     <div>Oluşturulma Tarihi</div>
                     <div>Tutar</div>
@@ -33,13 +33,22 @@ export default async function FormsPage() {
                     <div>İşlemler</div>
                 </div>
                 {forms.map((form) => {
-                    // Calculate dynamically to ensure consistency with actual expenses
+                    // Calculate dynamically
                     const totalAmount = form.expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
                     return (
-                        <div key={form.id} className="grid grid-cols-5 gap-4 p-4 border-b last:border-0 items-center">
-                            <div className="font-mono text-xs">{form.id.slice(0, 8)}...</div>
-                            <div>{new Date(form.createdAt).toLocaleDateString('tr-TR')}</div>
-                            <div className="font-bold">₺{totalAmount.toFixed(2)}</div>
+                        <div key={form.id} className="grid grid-cols-2 md:grid-cols-5 gap-y-2 gap-x-4 p-4 border-b last:border-0 items-center">
+                            <div className="font-mono text-xs text-gray-500 col-span-2 md:col-span-1">
+                                <span className="md:hidden font-bold text-gray-700 mr-2">ID:</span>
+                                {form.id.slice(0, 8)}...
+                            </div>
+                            <div className="text-sm">
+                                <span className="md:hidden font-bold text-gray-700 block text-xs">Tarih</span>
+                                {new Date(form.createdAt).toLocaleDateString('tr-TR')}
+                            </div>
+                            <div className="font-bold">
+                                <span className="md:hidden font-bold text-gray-700 block text-xs">Tutar</span>
+                                ₺{totalAmount.toFixed(2)}
+                            </div>
                             <div>
                                 <span className={clsx(
                                     "px-2 py-1 rounded text-xs font-medium",
@@ -54,7 +63,7 @@ export default async function FormsPage() {
                                 </span>
                             </div>
                             <div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 justify-end md:justify-start">
                                     <Link href={`/dashboard/forms/${form.id}`} className="text-blue-600 hover:underline text-sm font-medium">
                                         Detay
                                     </Link>

@@ -85,7 +85,7 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
             </div>
 
             <div className="bg-white rounded-md border shadow-sm">
-                <div className="grid grid-cols-5 gap-4 p-4 font-medium border-b bg-gray-50 text-sm text-gray-500">
+                <div className="hidden md:grid grid-cols-5 gap-4 p-4 font-medium border-b bg-gray-50 text-sm text-gray-500">
                     <div>Kullanıcı</div>
                     <div>Tarih</div>
                     <div>Tutar</div>
@@ -96,20 +96,24 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                     forms.map((form) => {
                         const totalAmount = form.expenses.reduce((sum, e) => sum + Number(e.amount), 0);
                         return (
-                            <div key={form.id} className="grid grid-cols-5 gap-4 p-4 border-b last:border-0 items-center hover:bg-gray-50 transition-colors">
-                                <div>
+                            <div key={form.id} className="grid grid-cols-2 md:grid-cols-5 gap-y-2 gap-x-4 p-4 border-b last:border-0 items-center hover:bg-gray-50 transition-colors">
+                                <div className="col-span-2 md:col-span-1">
                                     <div className="font-medium text-gray-900">{form.user?.name || 'Bilinmeyen Kullanıcı'}</div>
                                     <div className="text-xs text-gray-500">{form.user?.email}</div>
                                 </div>
                                 <div className="text-sm text-gray-600">
+                                    <span className="md:hidden font-bold text-gray-700 block text-xs">Tarih</span>
                                     {new Date(form.submittedAt || form.createdAt).toLocaleDateString('tr-TR')}
                                 </div>
-                                <div className="font-bold text-gray-900">₺{totalAmount.toFixed(2)}</div>
+                                <div className="font-bold text-gray-900">
+                                    <span className="md:hidden font-bold text-gray-700 block text-xs">Tutar</span>
+                                    ₺{totalAmount.toFixed(2)}
+                                </div>
                                 <div className="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded w-fit">
                                     {form.id.slice(0, 8)}...
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 justify-end md:justify-start">
                                         <Link href={`/dashboard/accounting/${form.id}`}>
                                             <Button size="sm" variant="outline" className="h-8">İncele</Button>
                                         </Link>

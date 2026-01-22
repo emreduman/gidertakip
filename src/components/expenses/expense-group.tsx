@@ -18,10 +18,10 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                     <thead className="bg-white text-gray-500 font-medium border-b text-xs uppercase">
                         <tr>
                             <th className="px-4 py-2">Gün</th>
-                            <th className="px-4 py-2">Fiş</th>
-                            <th className="px-4 py-2">İşyeri</th>
-                            <th className="px-4 py-2">Kategori</th>
-                            <th className="px-4 py-2">Açıklama</th>
+                            <th className="px-4 py-2 hidden sm:table-cell">Fiş</th>
+                            <th className="px-4 py-2 hidden md:table-cell">İşyeri</th>
+                            <th className="px-4 py-2 hidden lg:table-cell">Kategori</th>
+                            <th className="px-4 py-2 hidden xl:table-cell">Açıklama</th>
                             <th className="px-4 py-2 text-right">Tutar</th>
                             <th className="px-4 py-2">Durum</th>
                             <th className="px-4 py-2 text-right">İşlemler</th>
@@ -38,7 +38,7 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                         {new Date(expense.date).toLocaleDateString('tr-TR', { weekday: 'short' })}
                                     </div>
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 hidden sm:table-cell">
                                     {expense.receiptUrl ? (
                                         <a
                                             href={expense.receiptUrl}
@@ -53,16 +53,19 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                         <span className="text-gray-300">-</span>
                                     )}
                                 </td>
-                                <td className="px-4 py-3 font-medium">{expense.merchant || '-'}</td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 font-medium hidden md:table-cell">{expense.merchant || '-'}</td>
+                                <td className="px-4 py-3 hidden lg:table-cell">
                                     <span className="inline-block bg-gray-100 text-gray-600 rounded px-2 py-0.5 text-xs">
                                         {expense.category}
                                     </span>
                                 </td>
-                                <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate" title={expense.description || ''}>{expense.description}</td>
-                                <td className="px-4 py-3 text-right font-bold text-gray-900">₺{Number(expense.amount).toFixed(2)}</td>
+                                <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate hidden xl:table-cell" title={expense.description || ''}>{expense.description}</td>
+                                <td className="px-4 py-3 text-right font-bold text-gray-900">
+                                    <div>₺{Number(expense.amount).toFixed(2)}</div>
+                                    <div className="md:hidden text-xs text-gray-500 truncate max-w-[100px]">{expense.merchant}</div>
+                                </td>
                                 <td className="px-4 py-3">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${expense.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                    <span className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${expense.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
                                         expense.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
                                             expense.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
                                                 'bg-yellow-100 text-yellow-800'
