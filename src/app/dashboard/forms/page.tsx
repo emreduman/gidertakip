@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { clsx } from "clsx"
+import { FormActionsCell } from "@/components/forms/form-actions-cell"
 
 export const dynamic = 'force-dynamic';
 
@@ -53,9 +54,12 @@ export default async function FormsPage() {
                                 </span>
                             </div>
                             <div>
-                                <Link href={`/dashboard/forms/${form.id}`} className="text-blue-600 hover:underline text-sm">
-                                    Detay
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <Link href={`/dashboard/forms/${form.id}`} className="text-blue-600 hover:underline text-sm font-medium">
+                                        Detay
+                                    </Link>
+                                    <FormActionsCell formId={form.id} status={form.status} />
+                                </div>
                             </div>
                         </div>
                     )

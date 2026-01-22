@@ -230,6 +230,55 @@ export async function getFormDetails(formId: string) {
         return null;
     }
 
+    // ... existing code ...
     // Serialize dates
     return JSON.parse(JSON.stringify(form));
+}
+
+export async function deleteForm(id: string) {
+    const session = await auth();
+    if (!session?.user?.id) return { message: 'Not authenticated', success: false };
+
+    try {
+        const form = await prisma.expenseForm.findUnique({ where: { id } });
+        if (!form) return { message: 'Form bulunamadı', success: false };
+
+        // Permission: Owner or Admin
+        const isOwner = form.userId === session.user.id;
+        const isAdmin = session.user.role === 'ADMIN';
+
+        if (!isOwner && !isAdmin) {
+            return { message: 'Yetkisiz işlem', success: false };
+        }
+
+        // Status Check: Can only delete SUBMITTED or REJECTED
+        if (form.status === 'APPROVED' || (form.status as string) === 'PAID') {
+            return { message: 'Onaylanmış formlar silinemez.', success: false };
+        }
+
+        // Transaction: Delete form, set expenses back to PENDING, remove from form
+        await prisma.$transaction(async (tx) => {
+            // unlink expenses
+            await tx.expense.updateMany({
+                where: { expenseFormId: id },
+                data: {
+                    status: 'PENDING',
+                    expenseFormId: null,
+                    rejectionReason: null // Clear rejection history if any
+                }
+            });
+
+            // delete form
+            await tx.expenseForm.delete({ where: { id } });
+        });
+
+        revalidatePath('/dashboard/forms');
+        revalidatePath('/dashboard/accounting');
+        revalidatePath('/dashboard/expenses');
+        return { success: true, message: 'Form silindi ve harcamalar havuza aktarıldı.' };
+
+    } catch (e) {
+        console.error("Delete form error:", e);
+        return { message: 'Form silinirken hata oluştu.', success: false };
+    }
 }

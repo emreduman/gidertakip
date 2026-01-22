@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import mime from "mime"; // We don't have this package, better to implement simple lookup
+// import mime from "mime"; // Removed unused import
 
-export async function GET(req: NextRequest, { params }: { params: { filename: string } }) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<{ filename: string }> } // Correct type for Next.js 16
+) {
     const { filename } = await params;
 
     // Security: Prevent path traversal

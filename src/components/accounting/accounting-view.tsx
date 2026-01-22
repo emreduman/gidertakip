@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Clock, XCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { FormActionsCell } from "@/components/forms/form-actions-cell"
 
 interface ExpenseForm {
     id: string
@@ -108,9 +109,15 @@ export function AccountingView({ pendingForms, approvedForms, rejectedForms }: A
                                     {form.id.slice(0, 8)}...
                                 </div>
                                 <div>
-                                    <Link href={`/dashboard/accounting/${form.id}`}>
-                                        <Button size="sm" variant="outline" className="h-8">İncele</Button>
-                                    </Link>
+                                    <div className="flex items-center gap-2">
+                                        <Link href={`/dashboard/accounting/${form.id}`}>
+                                            <Button size="sm" variant="outline" className="h-8">İncele</Button>
+                                        </Link>
+                                        {/* Only show delete/edit actions for Pending/Rejected */}
+                                        {(activeTab === 'pending' || activeTab === 'rejected') && (
+                                            <FormActionsCell formId={form.id} status={activeTab === 'pending' ? 'SUBMITTED' : 'REJECTED'} />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )

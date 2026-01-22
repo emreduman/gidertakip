@@ -306,3 +306,78 @@ export async function exportExpensesAction(searchParams: { status?: string, mont
 
     return { csv: header + rows, filename: `expenses-${new Date().toISOString().split('T')[0]}.csv` };
 }
+
+export async function deleteExpense(id: string) {
+    const session = await auth();
+    if (!session?.user?.id) return { message: 'Not authenticated', success: false };
+
+    try {
+        const expense = await prisma.expense.findUnique({ where: { id } });
+        if (!expense) return { message: 'Harcama bulunamadı', success: false };
+
+        // Permission check: Owner or Admin
+        if (expense.userId !== session.user.id && session.user.role !== 'ADMIN') {
+            return { message: 'Yetkisiz işlem', success: false };
+        }
+
+        // Status check: Block if APPROVED or PAID
+        if (expense.status === 'APPROVED' || (expense.status as string) === 'PAID') {
+            return { message: 'Onaylanmış harcamalar silinemez.', success: false };
+        }
+
+        await prisma.expense.delete({ where: { id } });
+
+        revalidatePath('/dashboard/expenses');
+        return { success: true, message: 'Harcama silindi' };
+    } catch (e) {
+        console.error("Delete expense error:", e);
+        return { message: 'Silme işlemi başarısız', success: false };
+    }
+}
+
+export async function updateExpense(id: string, formData: FormData) {
+    const session = await auth();
+    if (!session?.user?.id) return { message: 'Not authenticated', success: false };
+
+    // Extract fields similar to create
+    const amount = formData.get('amount');
+    const dateStr = formData.get('date') as string;
+    const category = formData.get('category') as string;
+    const description = formData.get('description') as string;
+    const merchant = formData.get('merchant') as string;
+
+    // Convert date
+    const [day, month, year] = dateStr.split('.');
+    const isoDate = new Date(`${year}-${month}-${day}`);
+    if (isNaN(isoDate.getTime())) return { message: 'Geçersiz tarih', success: false };
+
+    try {
+        const expense = await prisma.expense.findUnique({ where: { id } });
+        if (!expense) return { message: 'Harcama bulunamadı', success: false };
+
+        if (expense.userId !== session.user.id && session.user.role !== 'ADMIN') {
+            return { message: 'Yetkisiz işlem', success: false };
+        }
+
+        if (expense.status === 'APPROVED') {
+            return { message: 'Onaylanmış harcamalar düzenlenemez.', success: false };
+        }
+
+        await prisma.expense.update({
+            where: { id },
+            data: {
+                amount: Number(amount),
+                date: isoDate,
+                category,
+                description,
+                merchant
+            }
+        });
+
+        revalidatePath('/dashboard/expenses');
+        return { success: true, message: 'Harcama güncellendi' };
+    } catch (e) {
+        console.error("Update expense error:", e);
+        return { message: 'Güncelleme başarısız', success: false };
+    }
+}

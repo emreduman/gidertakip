@@ -1,5 +1,6 @@
 import { Expense } from "@prisma/client"
 import { FileText, ExternalLink } from "lucide-react"
+import { ExpenseActionsCell } from "./expense-actions-cell"
 
 export function ExpenseGroup({ title, expenses }: { title: string, expenses: Expense[] }) {
     const total = expenses.reduce((sum, item) => sum + Number(item.amount), 0);
@@ -23,6 +24,7 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                             <th className="px-4 py-2">Açıklama</th>
                             <th className="px-4 py-2 text-right">Tutar</th>
                             <th className="px-4 py-2">Durum</th>
+                            <th className="px-4 py-2 text-right">İşlemler</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -69,6 +71,9 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                             expense.status === 'REJECTED' ? 'Reddedildi' :
                                                 expense.status === 'SUBMITTED' ? 'Formda' : 'Bekliyor'}
                                     </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                    <ExpenseActionsCell expense={expense} />
                                 </td>
                             </tr>
                         ))}
