@@ -73,7 +73,11 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                                     </span>
                                 </td>
                                 <td className="px-4 py-3">
-                                    <ExpenseActionsCell expense={expense} />
+                                    <ExpenseActionsCell expense={{
+                                        ...expense,
+                                        amount: Number(expense.amount),
+                                        date: new Date(expense.date).toISOString()
+                                    }} />
                                 </td>
                             </tr>
                         ))}
