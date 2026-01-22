@@ -6,7 +6,7 @@ import { checkExpensePolicy } from "@/lib/policy-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, AlertTriangle, Camera } from "lucide-react"
+import { Loader2, AlertTriangle, Camera, Sparkles } from "lucide-react"
 
 const initialState = {
     message: '',
@@ -194,8 +194,23 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                             onChange={handleFileChange}
                         />
 
-                        <Button type="button" onClick={handleParse} disabled={!file || isParsing} className="w-full">
-                            {isParsing ? 'Okunuyor...' : 'AI ile Oku'}
+                        <Button
+                            type="button"
+                            onClick={handleParse}
+                            disabled={!file || isParsing}
+                            className="w-full bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 text-white border-0 transition-all shadow-md"
+                        >
+                            {isParsing ? (
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <span>Okunuyor...</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4" />
+                                    <span>AI ile Oku</span>
+                                </div>
+                            )}
                         </Button>
 
                         <p className="text-xs text-gray-500">
