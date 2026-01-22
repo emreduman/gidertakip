@@ -90,13 +90,44 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
                         </Card>
                     </div>
 
-                    {/* Expenses List */}
+                    {/* Expenses List - Desktop Table / Mobile Card */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Harcama Detayları</CardTitle>
                         </CardHeader>
                         <CardContent className="p-0">
-                            <Table>
+                            {/* Mobile View */}
+                            <div className="md:hidden divide-y">
+                                {form.expenses.map((expense: any) => (
+                                    <div key={expense.id} className="p-4 flex gap-4">
+                                        <div className="shrink-0">
+                                            {expense.receiptUrl ? (
+                                                <ReceiptViewer url={expense.receiptUrl} />
+                                            ) : (
+                                                <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
+                                                    Yok
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div className="font-medium text-sm truncate pr-2">{expense.category || 'Diğer'}</div>
+                                                <div className="font-bold text-sm shrink-0">{Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
+                                            </div>
+                                            <div className="text-xs text-muted-foreground break-words line-clamp-2 mb-1">{expense.description}</div>
+                                            <div className="text-xs text-gray-500">{expense.merchant} • {new Date(expense.date).toLocaleDateString('tr-TR')}</div>
+                                            {expense.warnings && (
+                                                <Badge variant="outline" className="mt-2 border-yellow-500 text-yellow-600 text-[10px] px-1 py-0 h-auto inline-flex whitespace-normal text-left">
+                                                    <AlertCircle className="w-3 h-3 shrink-0 mr-1" /> {expense.warnings}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Desktop View */}
+                            <Table className="hidden md:table">
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-[80px]">Fiş</TableHead>
@@ -117,9 +148,9 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="align-top py-4">
+                                            <TableCell className="align-top py-4 max-w-[200px] xl:max-w-none">
                                                 <div className="font-medium text-sm">{expense.category || 'Diğer'}</div>
-                                                <div className="text-sm text-muted-foreground line-clamp-2 mt-1">{expense.description}</div>
+                                                <div className="text-sm text-muted-foreground line-clamp-2 mt-1 break-words">{expense.description}</div>
                                                 {expense.warnings && (
                                                     <Badge variant="outline" className="mt-2 border-yellow-500 text-yellow-600 text-[10px] px-1 py-0 h-5 gap-1 inline-flex">
                                                         <AlertCircle className="w-3 h-3" /> {expense.warnings}
