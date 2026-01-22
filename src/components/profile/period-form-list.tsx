@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { useState } from "react";
+import Link from 'next/link';
 
 interface Form {
     id: string;
@@ -86,23 +87,29 @@ function PeriodFormAccordion({ title, items }: { title: string, items: Form[] })
                         }
 
                         return (
-                            <div key={form.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
-                                        <FileText className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-gray-900">{form.title || `Form #${form.formNumber}`}</div>
-                                        <div className="text-xs text-gray-500">
-                                            {format(new Date(form.submittedAt), 'd MMMM yyyy', { locale: tr })}
+                            <Link
+                                key={form.id}
+                                href={`/dashboard/forms/${form.id}`}
+                                className="block hover:bg-gray-50 transition-colors"
+                            >
+                                <div className="p-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-100 rounded-lg text-gray-500">
+                                            <FileText className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <div className="font-medium text-gray-900">{form.title || `Form #${form.formNumber}`}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {format(new Date(form.submittedAt), 'd MMMM yyyy', { locale: tr })}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span className="font-bold">₺{Number(form.totalAmount).toFixed(2)}</span>
+                                        {statusBadge}
+                                    </div>
                                 </div>
-                                <div className="flex flex-col items-end gap-1">
-                                    <span className="font-bold">₺{Number(form.totalAmount).toFixed(2)}</span>
-                                    {statusBadge}
-                                </div>
-                            </div>
+                            </Link>
                         );
                     })}
                 </div>
