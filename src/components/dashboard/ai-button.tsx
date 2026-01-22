@@ -16,6 +16,10 @@ export function AIButton() {
             className="hidden md:flex relative w-16 h-16 items-center justify-center group"
             title="Yapay Zeka (Coming Soon)"
         >
+            {/* Hover Ripples */}
+            <div className="absolute inset-0 rounded-full border border-blue-400 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_ease-out_infinite]" />
+            <div className="absolute inset-0 rounded-full border border-cyan-300 opacity-0 group-hover:opacity-100 group-hover:animate-[ping_2s_ease-out_infinite_0.5s]" />
+
             {/* Ambient Glow */}
             <div className="absolute inset-2 bg-blue-500 rounded-full blur-xl opacity-50 group-hover:opacity-80 animate-pulse transition-opacity duration-500" />
 
