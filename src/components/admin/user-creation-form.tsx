@@ -28,7 +28,7 @@ export function UserCreationForm({ organizations }: UserCreationFormProps) {
         if (result?.success) {
             toast.success(result.message);
             formRef.current?.reset();
-            // Optional: router.refresh() if revalidatePath isn't enough for client-side navigation cache
+            router.refresh();
         } else {
             toast.error(result?.message || 'Bir hata oluştu.');
         }

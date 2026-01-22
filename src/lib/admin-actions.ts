@@ -103,20 +103,19 @@ export async function deletePeriod(formData: FormData) {
 // --- User Management ---
 
 export async function createUser(formData: FormData) {
-    await checkAdmin();
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string; // Note: In real app, hash this!
-    const role = formData.get('role') as Role;
-    const organizationId = formData.get('organizationId') as string;
-
-    // Basic validation
-    if (!email || !role || !password) {
-        throw new Error("Email, Password and Role are required");
-    }
-
-    // ...
     try {
+        await checkAdmin();
+        const name = formData.get('name') as string;
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        const role = formData.get('role') as Role;
+        const organizationId = formData.get('organizationId') as string;
+
+        // Basic validation
+        if (!email || !role || !password) {
+            return { success: false, message: 'E-posta, Şifre ve Rol alanları zorunludur.' };
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await prisma.user.create({
@@ -135,7 +134,10 @@ export async function createUser(formData: FormData) {
         if (e.code === 'P2002') {
             return { success: false, message: 'Bu e-posta adresi zaten kullanımda.' };
         }
-        return { success: false, message: 'Kullanıcı oluşturulurken beklenmedik bir hata oluştu.' };
+        if (e.message === 'Unauthorized') {
+            return { success: false, message: 'Yetkisiz işlem.' };
+        }
+        return { success: false, message: 'Kullanıcı oluşturulurken bir hata oluştu: ' + (e.message || 'Bilinmeyen hata') };
     }
 }
 
