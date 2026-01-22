@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { sendNotification } from "@/lib/notification-service";
+import { notifyAdmins } from "@/lib/notification-service";
 // import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest) {
@@ -84,12 +84,11 @@ export async function POST(req: NextRequest) {
 
         // Notifications & Gamification (Non-blocking errors)
         try {
-            await sendNotification({
-                type: 'FORM_SUBMITTED',
-                message: `${session.user.name || session.user.email} yeni bir masraf formu gönderdi.`,
-                details: { Title: title, Total: `${totalAmount} TRY`, Count: expenseIds.length },
-                userId: session.user.id
-            });
+            await notifyAdmins(
+                'Yeni Masraf Formu',
+                `${session.user.name || session.user.email} yeni bir masraf formu oluşturdu: ${title}`,
+                `/dashboard/accounting/${createdFormId}`
+            );
 
             const user = await prisma.user.findUnique({ where: { id: session.user.id } });
             if (user) {
