@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function AIButton() {
@@ -13,16 +13,22 @@ export function AIButton() {
     return (
         <button
             onClick={handleClick}
-            className="hidden md:flex relative w-12 h-12 items-center justify-center group"
+            className="hidden md:flex relative w-16 h-16 items-center justify-center group"
             title="Yapay Zeka (Coming Soon)"
         >
-            {/* Glow / Aura */}
-            <div className="absolute inset-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 animate-pulse transition-opacity" />
+            {/* Ambient Glow */}
+            <div className="absolute inset-2 bg-blue-500 rounded-full blur-xl opacity-50 group-hover:opacity-80 animate-pulse transition-opacity duration-500" />
 
-            {/* Core Sphere */}
-            <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-cyan-300 via-blue-600 to-purple-700 shadow-lg group-hover:scale-110 transition-transform duration-300 flex items-center justify-center overflow-hidden">
-                {/* Internal Animation/Texture */}
-                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-transparent animate-[spin_3s_linear_infinite]" />
+            {/* 3D Sphere Container */}
+            <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 via-blue-600 to-indigo-900 shadow-[inset_-2px_-2px_6px_rgba(0,0,0,0.4),inset_2px_2px_6px_rgba(255,255,255,0.4)] flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                {/* Rotating Overlay/Texture (The Globe Wireframe) */}
+                <Globe className="w-full h-full p-0.5 text-cyan-100/80 animate-[spin_6s_linear_infinite]" strokeWidth={1.2} />
+
+                {/* Shadow Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/30 rounded-full" />
+
+                {/* Specular Highlight (The 'Glass' look) */}
+                <div className="absolute top-1.5 left-2 w-5 h-2.5 bg-white/40 blur-[2px] rounded-full -rotate-12" />
             </div>
         </button>
     )
