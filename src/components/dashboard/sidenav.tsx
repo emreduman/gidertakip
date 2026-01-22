@@ -16,15 +16,14 @@ export default function SideNav() {
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-1 text-white z-20">
 
-                    {/* Desktop & Mobile Actions Group */}
-                    {/* On Desktop: Absolute Top Right. On Mobile: Flex flow */}
-                    <div className="md:absolute md:top-3 md:right-3 flex gap-2 items-center">
+                    {/* Desktop Centered AI Button */}
+                    <div className="hidden md:block md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
                         <AIButton />
-                        <NotificationBell />
                     </div>
 
-                    {/* Mobile Only: Profile & Logout */}
+                    {/* Mobile Only: Bell, Profile & Logout */}
                     <div className="flex gap-1 md:hidden">
+                        <NotificationBell />
                         <Link href="/dashboard/profile" className="p-2 hover:bg-blue-500 rounded-full transition-colors">
                             <UserCircleIcon className="w-6 h-6" />
                         </Link>

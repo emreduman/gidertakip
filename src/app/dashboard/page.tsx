@@ -6,6 +6,7 @@ import { OverviewChart } from "@/components/dashboard/overview-chart"
 import { KPICards } from "@/components/dashboard/kpi-cards"
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters"
 import { prisma } from "@/lib/prisma"
+import { NotificationBell } from "@/components/dashboard/notification-bell"
 
 // Function to get date range from period
 function getDateRange(year: number, period: string) {
@@ -145,9 +146,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {/* Gamification Badge */}
+                    {/* Welcome Text */}
                     <div className="text-sm text-muted-foreground hidden md:block">
                         Hoş geldin, <Link href="/dashboard/profile" className="font-semibold text-foreground hover:underline">{session?.user?.name}</Link>
+                    </div>
+                    {/* Desktop Notification Bell */}
+                    <div className="hidden md:block">
+                        <NotificationBell />
                     </div>
                 </div>
             </div>
