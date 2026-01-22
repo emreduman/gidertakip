@@ -4,7 +4,7 @@ import { ROLE_LABELS } from "@/lib/utils"
 import { Role } from "@prisma/client"
 import { redirect } from "next/navigation"
 import {
-    createOrganization, createProject, createPeriod, createUser,
+    createOrganization, createProject, createPeriod,
     deleteOrganization, deleteProject, deletePeriod, deleteUser,
     updateOrganization, updateProject, updatePeriod, updateUser
 } from "@/lib/admin-actions"
@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { EditableItem } from "@/components/admin/editable-item"
 import { UserListItem } from "@/components/admin/user-list-item"
+import { UserCreationForm } from "@/components/admin/user-creation-form"
+
 
 export default async function AdminPage() {
     const session = await auth();
@@ -107,23 +109,8 @@ export default async function AdminPage() {
             {/* User Management */}
             <section className="bg-white p-6 rounded shadow border">
                 <h2 className="text-xl font-semibold mb-4">Kullanıcı Yönetimi</h2>
-                <form action={createUser} className="space-y-4 mb-4 border p-4 rounded bg-slate-50">
-                    <h3 className="text-sm font-medium">Yeni Kullanıcı Ekle</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <Input name="name" placeholder="Ad Soyad" required />
-                        <Input name="email" type="email" placeholder="E-posta" required />
-                        <Input name="password" type="password" placeholder="Şifre" required />
-                        <select name="role" className="border rounded p-2 text-sm" required>
-                            <option value="">Rol Seç</option>
-                            {Object.keys(ROLE_LABELS).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-                        </select>
-                        <select name="organizationId" className="border rounded p-2 text-sm">
-                            <option value="">Organizasyon (Opsiyonel)</option>
-                            {orgs.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
-                        </select>
-                        <Button type="submit">Kullanıcı Oluştur</Button>
-                    </div>
-                </form>
+                <UserCreationForm organizations={orgs} />
+
 
                 <div className="space-y-2 mt-6">
                     <h3 className="text-sm font-medium mb-2">Mevcut Kullanıcılar</h3>

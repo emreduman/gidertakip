@@ -115,6 +115,7 @@ export async function createUser(formData: FormData) {
         throw new Error("Email, Password and Role are required");
     }
 
+    // ...
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -127,12 +128,17 @@ export async function createUser(formData: FormData) {
                 organizationId: organizationId || null
             }
         });
-    } catch (e) {
+        revalidatePath('/dashboard/admin');
+        return { success: true, message: 'Kullanıcı başarıyla oluşturuldu.' };
+    } catch (e: any) {
         console.error("Failed to create user", e);
-        // return { message: 'Failed to create user' }; // actions usually return data
+        if (e.code === 'P2002') {
+            return { success: false, message: 'Bu e-posta adresi zaten kullanımda.' };
+        }
+        return { success: false, message: 'Kullanıcı oluşturulurken beklenmedik bir hata oluştu.' };
     }
-    revalidatePath('/dashboard/admin');
 }
+
 
 export async function deleteUser(formData: FormData) {
     await checkAdmin();
