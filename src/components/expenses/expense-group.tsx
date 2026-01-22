@@ -1,19 +1,22 @@
 import { Expense } from "@prisma/client"
-import { FileText, ExternalLink } from "lucide-react"
+import { FileText, ExternalLink, ChevronDown } from "lucide-react"
 import { ExpenseActionsCell } from "./expense-actions-cell"
 
 export function ExpenseGroup({ title, expenses }: { title: string, expenses: Expense[] }) {
     const total = expenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
     return (
-        <div className="bg-white border rounded-lg shadow-sm overflow-hidden">
-            <div className="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
-                <h3 className="font-bold text-gray-700">{title}</h3>
+        <details className="group bg-white border rounded-lg shadow-sm overflow-hidden open:pb-0" open>
+            <summary className="bg-gray-50 px-4 py-3 border-b flex justify-between items-center cursor-pointer list-none select-none hover:bg-gray-100 transition-colors">
+                <div className="flex items-center gap-2">
+                    <ChevronDown className="w-5 h-5 text-gray-500 transition-transform duration-300 group-open:rotate-180" />
+                    <h3 className="font-bold text-gray-700">{title}</h3>
+                </div>
                 <span className="text-sm font-medium bg-white px-2 py-1 rounded border shadow-sm">
                     Toplam: ₺{total.toFixed(2)}
                 </span>
-            </div>
-            <div className="overflow-x-auto">
+            </summary>
+            <div className="overflow-x-auto animate-in slide-in-from-top-2 duration-300">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-white text-gray-500 font-medium border-b text-xs uppercase hidden md:table-header-group">
                         <tr>
@@ -125,6 +128,6 @@ export function ExpenseGroup({ title, expenses }: { title: string, expenses: Exp
                     </tbody>
                 </table>
             </div>
-        </div>
+        </details>
     )
 }
