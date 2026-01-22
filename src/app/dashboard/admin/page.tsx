@@ -13,7 +13,23 @@ import { Input } from "@/components/ui/input"
 import { EditableItem } from "@/components/admin/editable-item"
 import { UserListItem } from "@/components/admin/user-list-item"
 import { UserCreationForm } from "@/components/admin/user-creation-form"
+import { ChevronDown } from "lucide-react"
 
+function AdminSection({ title, children, isOpen = false }: { title: string, children: React.ReactNode, isOpen?: boolean }) {
+    return (
+        <details className="group bg-white rounded-lg shadow-sm border overflow-hidden" open={isOpen}>
+            <summary className="p-6 font-semibold text-xl cursor-pointer list-none flex justify-between items-center transition-colors hover:bg-gray-50 select-none">
+                {title}
+                <ChevronDown className="w-5 h-5 text-gray-500 transition-transform duration-300 group-open:rotate-180" />
+            </summary>
+            <div className="px-6 pb-6 border-t animate-in slide-in-from-top-1 duration-200">
+                <div className="pt-4">
+                    {children}
+                </div>
+            </div>
+        </details>
+    );
+}
 
 export default async function AdminPage() {
     const session = await auth();
@@ -27,12 +43,11 @@ export default async function AdminPage() {
     const users = await prisma.user.findMany({ include: { organization: true }, orderBy: { createdAt: 'desc' } });
 
     return (
-        <main className="space-y-8">
-            <h1 className="text-2xl font-bold">Yönetim Paneli</h1>
+        <main className="space-y-4">
+            <h1 className="text-2xl font-bold mb-6">Yönetim Paneli</h1>
 
             {/* Organizations */}
-            <section className="bg-white p-6 rounded shadow border">
-                <h2 className="text-xl font-semibold mb-4">Organizasyonlar</h2>
+            <AdminSection title="Organizasyonlar">
                 <form action={createOrganization} className="flex gap-4 mb-4">
                     <Input name="name" placeholder="Yeni Organizasyon Adı" required />
                     <Button type="submit">Ekle</Button>
@@ -48,11 +63,10 @@ export default async function AdminPage() {
                         />
                     ))}
                 </div>
-            </section>
+            </AdminSection>
 
             {/* Projects */}
-            <section className="bg-white p-6 rounded shadow border">
-                <h2 className="text-xl font-semibold mb-4">Projeler</h2>
+            <AdminSection title="Projeler">
                 <form action={createProject} className="space-y-4 mb-4">
                     <div className="flex gap-4">
                         <select name="organizationId" className="border rounded p-2 text-sm w-48" required>
@@ -75,11 +89,10 @@ export default async function AdminPage() {
                         />
                     ))}
                 </div>
-            </section>
+            </AdminSection>
 
             {/* Periods */}
-            <section className="bg-white p-6 rounded shadow border">
-                <h2 className="text-xl font-semibold mb-4">Dönemler</h2>
+            <AdminSection title="Dönemler">
                 <form action={createPeriod} className="space-y-4 mb-4">
                     <div className="flex gap-4 flex-wrap">
                         <select name="projectId" className="border rounded p-2 text-sm w-48" required>
@@ -104,13 +117,11 @@ export default async function AdminPage() {
                         />
                     ))}
                 </div>
-            </section>
+            </AdminSection>
 
             {/* User Management */}
-            <section className="bg-white p-6 rounded shadow border">
-                <h2 className="text-xl font-semibold mb-4">Kullanıcı Yönetimi</h2>
+            <AdminSection title="Kullanıcı Yönetimi" isOpen={true}>
                 <UserCreationForm organizations={orgs} />
-
 
                 <div className="space-y-2 mt-6">
                     <h3 className="text-sm font-medium mb-2">Mevcut Kullanıcılar</h3>
@@ -125,8 +136,9 @@ export default async function AdminPage() {
                         />
                     ))}
                 </div>
-            </section>
+            </AdminSection>
 
         </main>
     );
 }
+
