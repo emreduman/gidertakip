@@ -34,7 +34,7 @@ git branch -M main
 ### Adım 4: GitHub ile Bağlantı Kur
 **ÖNEMLİ:** Aşağıdaki komuttaki `KULLANICI_ADI` kısmını kendi GitHub kullanıcı adınızla değiştirin. Eğer GitHub sayfasında size verilen bir adres varsa onu kullanın.
 ```bash
-git remote add origin https://github.com/KULLANICI_ADI/gider-takip-app.git
+git remote add origin https://github.com/emreduman/gidertakip.git
 ```
 *(Eğer "remote origin already exists" hatası alırsanız, bu adımı atlayıp doğrudan Adım 5'e geçin)*
 
