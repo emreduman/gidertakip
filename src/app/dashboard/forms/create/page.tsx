@@ -13,7 +13,7 @@ export default async function CreateFormPage(props: { searchParams: Promise<{ us
     const effectiveUserId = (isAdmin && targetUserId) ? targetUserId : session?.user?.id;
 
     // Fetch ALL users if Admin (for selection)
-    let allUsers = [];
+    let allUsers: { id: string; name: string | null; email: string | null }[] = [];
     if (isAdmin) {
         allUsers = await prisma.user.findMany({
             select: { id: true, name: true, email: true }
