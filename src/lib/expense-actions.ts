@@ -107,6 +107,24 @@ export async function createExpense(prevState: any, formData: FormData) {
     }
 
     try {
+        // Check for Active Period
+        // For simplicity, we find a period that covers the expense date. 
+        // In a real app, this might be tied to the USER's specific project assignment.
+        // Here we just look for ANY active period in the system (or linked to user org if available)
+
+        // We first try to find a period that encompasses the expense date
+        const activePeriod = await prisma.period.findFirst({
+            where: {
+                startDate: { lte: isoDate },
+                endDate: { gte: isoDate },
+                isActive: true
+            }
+        });
+
+        if (!activePeriod) {
+            return { message: 'Hata: Bu tarih için tanımlı aktif bir dönem bulunamadı.' };
+        }
+
         // DUPLICATE CHECK: Same user, same date, same amount, same merchant
         const existing = await prisma.expense.findFirst({
             where: {
@@ -149,30 +167,8 @@ export async function createExpense(prevState: any, formData: FormData) {
                 receiptUrl: receiptUrl,
                 warnings: finalWarnings || null, // Persist AI warnings + Policy warnings
                 user: { connect: { id: userId } }, // Connect via relation
-                period: {
-                    connectOrCreate: {
-                        where: { id: 'default-period' },
-                        create: {
-                            name: 'Default Period',
-                            startDate: new Date(),
-                            endDate: new Date(),
-                            project: {
-                                connectOrCreate: {
-                                    where: { id: 'default-project' },
-                                    create: {
-                                        name: 'Default Project',
-                                        organization: {
-                                            connectOrCreate: {
-                                                where: { id: 'default-org' },
-                                                create: { name: 'Default Organization' }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                period: { connect: { id: activePeriod.id } }
+
             } as any
         })
     } catch (e) {
