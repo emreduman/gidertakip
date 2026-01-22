@@ -1,4 +1,5 @@
-require('dotenv').config()
+try { require('dotenv').config() } catch (e) { /* ignore in prod */ }
+
 const { PrismaClient } = require('@prisma/client')
 const { PrismaPg } = require('@prisma/adapter-pg')
 const { Pool } = require('pg')
