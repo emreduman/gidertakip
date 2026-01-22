@@ -1,47 +1,64 @@
+import { prisma } from "@/lib/prisma"
+import { Role } from "@prisma/client"
 
 type NotificationType = 'NEW_EXPENSE' | 'FORM_SUBMITTED' | 'FORM_APPROVED' | 'FORM_REJECTED';
 
 interface NotificationPayload {
-    type: NotificationType;
+    userId: string; // The recipient
+    title: string;
     message: string;
-    details?: any;
-    userId?: string;
+    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
+    link?: string;
 }
 
-export async function sendNotification(payload: NotificationPayload) {
-    const { type, message, details, userId } = payload;
-    const timestamp = new Date().toISOString();
-
-    // 1. Console Log (Always active for debug)
-    console.log(`[NOTIFICATION - ${type}] ${timestamp}: ${message}`, details);
-
-    // 2. Slack Webhook (If configured)
-    const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-    if (slackWebhookUrl) {
-        try {
-            await fetch(slackWebhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: `*${type}*: ${message}`,
-                    attachments: details ? [{
-                        color: type === 'FORM_REJECTED' ? '#ef4444' : '#22c55e',
-                        fields: Object.entries(details).map(([k, v]) => ({
-                            title: k,
-                            value: String(v),
-                            short: true
-                        }))
-                    }] : []
-                })
-            });
-        } catch (error) {
-            console.error("Failed to send Slack notification", error);
-        }
-    }
-
-    // 3. Email (Simulation)
-    // Real implementation would use nodemailer here
-    if (process.env.ENABLE_EMAIL_NOTIFICATIONS === 'true') {
-        console.log(`[EMAIL SIMULATION] To: Admin | Subject: ${type} | Body: ${message}`);
+export async function createNotification(payload: NotificationPayload) {
+    try {
+        await prisma.notification.create({
+            data: {
+                userId: payload.userId,
+                title: payload.title,
+                message: payload.message,
+                type: payload.type,
+                link: payload.link,
+            }
+        });
+    } catch (error) {
+        console.error("Failed to create db notification", error);
     }
 }
+
+// Helper to notify a specific user (e.g. form owner)
+export async function notifyUser(userId: string, title: string, message: string, type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR', link?: string) {
+    await createNotification({ userId, title, message, type, link });
+}
+
+// Helper to notify all admins/accountants (e.g. new form submission)
+export async function notifyAdmins(title: string, message: string, link?: string) {
+    try {
+        const admins = await prisma.user.findMany({
+            where: {
+                role: { in: [Role.ADMIN, Role.ACCOUNTANT] }
+            },
+            select: { id: true }
+        });
+
+        const notifications = admins.map(admin => ({
+            userId: admin.id,
+            title,
+            message,
+            type: 'INFO',
+            link
+        }));
+
+        // Prisma createMany is faster
+        await prisma.notification.createMany({
+            data: notifications as any // Cast for safe type
+        });
+
+    } catch (error) {
+        console.error("Failed to notify admins", error);
+    }
+}
+
+// Legacy wrapper to keep compatibility if needed, but better to replace usages.
+// For now, let's keep it simple.

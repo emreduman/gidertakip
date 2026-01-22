@@ -87,6 +87,7 @@ model User {
   sessions     Session[]
   expenses     Expense[]
   expenseForms ExpenseForm[]
+  notifications Notification[]
   
   // For auditing who processed a form
   processedForms ExpenseForm[] @relation("ProcessedBy")
@@ -228,4 +229,18 @@ model Policy {
   updatedAt      DateTime     @updatedAt
 
   @@unique([organizationId, category])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR
+  link      String?  
+  isRead    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
 }

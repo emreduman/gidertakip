@@ -5,7 +5,7 @@ import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-import { sendNotification } from "@/lib/notification-service";
+import { notifyAdmins, notifyUser } from "@/lib/notification-service";
 
 export async function testPing() {
     console.log("Ping received on server");
@@ -76,12 +76,11 @@ export async function _deprecated_createExpenseForm(formData: FormData) {
 
         // Send Notification
         try {
-            await sendNotification({
-                type: 'FORM_SUBMITTED',
-                message: `${session.user.name || session.user.email} yeni bir masraf formu gönderdi.`,
-                details: { Title: title, Total: `${totalAmount} TRY`, Count: expenseIds.length },
-                userId: session.user.id
-            });
+            await notifyAdmins(
+                'Yeni Masraf Formu',
+                `${session.user.name || session.user.email} yeni bir masraf formu oluşturdu: ${title}`,
+                `/dashboard/accounting/${createdFormId}`
+            );
         } catch (notifyErr) {
             console.error("[SERVER_ACTION] Notification Error (Non-fatal):", notifyErr);
         }
@@ -135,11 +134,13 @@ export async function approveForm(formId: string) {
     // Notify User
     const form = await prisma.expenseForm.findUnique({ where: { id: formId }, include: { user: true } });
     if (form) {
-        await sendNotification({
-            type: 'FORM_APPROVED',
-            message: `Masraf formunuz onaylandı: ${form.title}`,
-            userId: form.userId
-        });
+        await notifyUser(
+            form.userId,
+            'Form Onaylandı',
+            `Masraf formunuz onaylandı: ${form.title}`,
+            'SUCCESS',
+            `/dashboard/forms/${form.id}`
+        );
     }
 
     revalidatePath('/dashboard/accounting');
@@ -170,12 +171,13 @@ export async function rejectForm(formId: string, reason: string) {
     // Notify User
     const form = await prisma.expenseForm.findUnique({ where: { id: formId }, include: { user: true } });
     if (form) {
-        await sendNotification({
-            type: 'FORM_REJECTED',
-            message: `Masraf formunuz reddedildi: ${form.title}`,
-            details: { Reason: reason },
-            userId: form.userId
-        });
+        await notifyUser(
+            form.userId,
+            'Form Reddedildi',
+            `Masraf formunuz reddedildi: ${form.title}. Sebep: ${reason}`,
+            'ERROR',
+            `/dashboard/forms/${form.id}`
+        );
     }
 
     revalidatePath('/dashboard/accounting');
