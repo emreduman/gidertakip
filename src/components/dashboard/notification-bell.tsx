@@ -23,12 +23,21 @@ export function NotificationBell() {
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     const fetchNotifications = async () => {
-        const data = await getUserNotifications();
-        // date serialization fix might be needed if generic server action returns Date objects directly
-        // usually server components serialize but direct props might be tricky.
-        // Prisma objects passed from server action to client component are usually fine in Next.js 14.
-        setNotifications(data as any);
-        setUnreadCount(data.filter((n: any) => !n.isRead).length);
+        try {
+            const data = await getUserNotifications();
+            // Ensure data is an array before processing
+            if (Array.isArray(data)) {
+                setNotifications(data as any);
+                setUnreadCount(data.filter((n: any) => !n.isRead).length);
+            } else {
+                console.error("fetchNotifications: Invalid data format", data);
+                setNotifications([]);
+            }
+        } catch (error) {
+            console.error("fetchNotifications error:", error);
+            // Don't crash the UI, just show no notifications
+            setNotifications([]);
+        }
     }
 
     useEffect(() => {
