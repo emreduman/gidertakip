@@ -137,7 +137,7 @@ export async function createExpense(prevState: any, formData: FormData) {
                 userId: userId, // Check against the target user
                 amount: Number(amount),
                 date: isoDate,
-                merchant: merchant
+                merchant: merchant?.trim()
             }
         });
 
@@ -169,7 +169,7 @@ export async function createExpense(prevState: any, formData: FormData) {
                 date: isoDate,
                 category: category,
                 description: description,
-                merchant: merchant,
+                merchant: merchant?.trim(),
                 receiptUrl: receiptUrl,
                 warnings: finalWarnings || null, // Persist AI warnings + Policy warnings
                 user: { connect: { id: userId } }, // Connect via relation
@@ -210,6 +210,7 @@ export async function createBulkExpenses(prevState: any, formData: FormData) {
     const files = formData.getAll('files') as File[];
 
     let savedCount = 0;
+    let skippedCount = 0;
 
     try {
         // Find or create default structure once
@@ -245,6 +246,21 @@ export async function createBulkExpenses(prevState: any, formData: FormData) {
 
             if (isNaN(isoDate.getTime())) continue; // Skip invalid dates
 
+            // DUPLICATE CHECK: Same user, same date, same amount, same merchant
+            const existing = await prisma.expense.findFirst({
+                where: {
+                    userId: session.user.id,
+                    amount: Number(expense.amount),
+                    date: isoDate,
+                    merchant: expense.merchant?.trim()
+                }
+            });
+
+            if (existing) {
+                skippedCount++;
+                continue;
+            }
+
             let receiptUrl = expense.receiptUrl; // Check if already has one (maybe from existing logic?)
 
             // Upload file if available at index
@@ -259,7 +275,7 @@ export async function createBulkExpenses(prevState: any, formData: FormData) {
                     date: isoDate,
                     category: expense.category,
                     description: expense.description,
-                    merchant: expense.merchant,
+                    merchant: expense.merchant?.trim(),
                     receiptUrl: receiptUrl,
                     userId: session.user.id,
                     periodId: period.id,
@@ -274,7 +290,7 @@ export async function createBulkExpenses(prevState: any, formData: FormData) {
     }
 
     revalidatePath('/dashboard/expenses');
-    return { success: true, count: savedCount };
+    return { success: true, count: savedCount, skipped: skippedCount };
 }
 
 export async function exportExpensesAction(searchParams: { status?: string, month?: string }) {
