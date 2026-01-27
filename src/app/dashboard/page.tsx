@@ -1,4 +1,5 @@
 import { auth } from "@/auth"
+import React from 'react';
 
 import Link from "next/link"
 import { formatCurrency } from "@/lib/utils"
@@ -158,7 +159,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
             </div>
 
             {/* Filters */}
-            <DashboardFilters />
+            <div className="w-full">
+                <React.Suspense fallback={<div className="h-14 bg-gray-100 rounded-lg animate-pulse" />}>
+                    <DashboardFilters />
+                </React.Suspense>
+            </div>
 
             {/* KPI Cards */}
             <KPICards
