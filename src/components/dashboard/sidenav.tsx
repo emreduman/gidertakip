@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import NavLinks from '@/components/dashboard/nav-links';
 import { PowerIcon, UserCircleIcon } from 'lucide-react';
-import { signOut } from '@/auth';
+import { signOut, auth } from '@/auth';
 import { NotificationBell } from './notification-bell';
 import { AIButton } from './ai-button';
 
-export default function SideNav() {
+export default async function SideNav() {
+    const session = await auth();
+    const userRole = session?.user?.role;
+
     return (
         <div className="flex h-full flex-col px-3 py-4 md:px-2">
             <div className="relative mb-2 flex h-20 items-center justify-between rounded-md bg-blue-600 p-4 md:h-40 md:items-end md:justify-start">
@@ -42,7 +45,7 @@ export default function SideNav() {
             </div>
 
             <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2 overflow-x-auto pb-1 md:pb-0">
-                <NavLinks />
+                <NavLinks role={userRole} />
                 <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
                 <form
                     action={async () => {

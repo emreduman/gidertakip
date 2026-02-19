@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -110,6 +111,7 @@ model Organization {
   users     User[]
   projects  Project[]
   policies  Policy[]
+  settings  Settings?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -243,4 +245,43 @@ model Notification {
   isRead    Boolean  @default(false)
   
   createdAt DateTime @default(now())
+}
+
+model Settings {
+  id             String       @id @default(cuid())
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // AI Integration
+  openaiApiKey      String?
+  geminiApiKey      String?
+  openRouterApiKey  String?
+  openRouterModel   String?   @default("google/gemini-2.0-flash-001")
+  
+  // SMTP Configuration
+  smtpHost        String?
+  smtpPort        Int?
+  smtpUser        String?
+  smtpPassword    String?
+  smtpSecure      Boolean  @default(true)
+  smtpFromEmail   String?
+
+  // RSS Feeds relation
+  rssFeeds        RssFeed[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model RssFeed {
+  id         String   @id @default(cuid())
+  name       String
+  url        String
+  isActive   Boolean  @default(true)
+  
+  settingsId String
+  settings   Settings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

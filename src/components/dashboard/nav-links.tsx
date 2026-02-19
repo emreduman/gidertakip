@@ -6,7 +6,8 @@ import {
     UsersIcon,
     WalletIcon,
     BanknoteIcon,
-    UserCircleIcon
+    UserCircleIcon,
+    SettingsIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -21,16 +22,27 @@ const links = [
     { name: 'Muhasebe', href: '/dashboard/accounting', icon: BanknoteIcon }, // Should be role protected later
     { name: 'Yönetim', href: '/dashboard/admin', icon: UsersIcon }, // Admin only
     { name: 'Profil', href: '/dashboard/profile', icon: UserCircleIcon },
+    { name: 'Ayarlar', href: '/dashboard/settings', icon: SettingsIcon },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({ role }: { role?: string }) {
     const pathname = usePathname();
-    // TODO: Filter links based on user role
 
     return (
         <>
             {links.map((link) => {
                 const LinkIcon = link.icon;
+
+                // Hide Settings link if user is not ADMIN or OWNER
+                if (link.href === '/dashboard/settings' && role !== 'ADMIN' && role !== 'OWNER') {
+                    return null;
+                }
+
+                // Hide Admin link if user is not ADMIN or OWNER
+                if (link.href === '/dashboard/admin' && role !== 'ADMIN' && role !== 'OWNER') {
+                    return null;
+                }
+
                 return (
                     <Link
                         key={link.name}
