@@ -46,56 +46,83 @@ export function UserListItem({ user, organizations, currentUserId, onUpdate, onD
     };
 
     return (
-        <div className="p-3 border rounded bg-white flex justify-between items-center gap-4">
+        <div className="p-4 border border-slate-100 rounded-xl bg-white flex justify-between items-center gap-4 transition-all hover:border-slate-200 hover:shadow-sm">
             {isEditing ? (
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                    <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="İsim"
-                        className="h-8"
-                    />
-                    <Input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                        className="h-8"
-                    />
-                    <select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value as Role)}
-                        className="h-8 border rounded px-2 text-sm"
-                    >
-                        {Object.keys(ROLE_LABELS).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-                    </select>
-                    <div className="flex gap-1">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50/50 p-3 rounded-lg border border-slate-100">
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">İsim</label>
+                        <Input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="İsim"
+                            className="h-9 bg-white border-slate-200"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">E-posta</label>
+                        <Input
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Email"
+                            className="h-9 bg-white border-slate-200"
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rol</label>
                         <select
-                            value={orgId}
-                            onChange={(e) => setOrgId(e.target.value)}
-                            className="h-8 border rounded px-2 text-sm flex-1"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value as Role)}
+                            className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500"
                         >
-                            <option value="">Organizasyon Yok</option>
-                            {organizations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                            {Object.keys(ROLE_LABELS).map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                         </select>
-                        <Button size="sm" onClick={handleUpdate} variant="default" className="h-8 w-8 p-0 shrink-0">
-                            <CheckIcon className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" onClick={() => setIsEditing(false)} variant="ghost" className="h-8 w-8 p-0 shrink-0">
-                            <XIcon className="w-4 h-4" />
-                        </Button>
+                    </div>
+                    <div className="space-y-1 flex flex-col justify-end pb-0.5">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Organizasyon</label>
+                        <div className="flex gap-2">
+                            <select
+                                value={orgId}
+                                onChange={(e) => setOrgId(e.target.value)}
+                                className="flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 flex-1"
+                            >
+                                <option value="">Yok (Bağımsız)</option>
+                                {organizations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                            </select>
+                            <Button size="sm" onClick={handleUpdate} className="h-9 w-9 p-0 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+                                <CheckIcon className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" onClick={() => setIsEditing(false)} variant="outline" className="h-9 w-9 p-0 shrink-0 border-slate-200 text-slate-500 hover:bg-slate-100">
+                                <XIcon className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             ) : (
                 <>
                     <div className="flex flex-col">
-                        <span className="font-medium">{user.name || 'İsimsiz'}</span>
-                        <span className="text-xs text-gray-500">
-                            {user.email} • {ROLE_LABELS[user.role] || user.role} {user.organization ? `• ${user.organization.name}` : ''}
-                        </span>
+                        <span className="font-semibold text-slate-800">{user.name || 'İsimsiz Kullanıcı'}</span>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="text-xs font-medium text-slate-500">{user.email}</span>
+                            <span className="text-slate-300 text-xs">•</span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide
+                                ${user.role === 'ADMIN' ? 'bg-amber-100 text-amber-700' :
+                                    user.role === 'ACCOUNTANT' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'}`
+                            }>
+                                {ROLE_LABELS[user.role] || user.role}
+                            </span>
+                            {user.organization && (
+                                <>
+                                    <span className="text-slate-300 text-xs">•</span>
+                                    <span className="text-[10px] font-bold bg-teal-50 text-teal-700 px-2 py-0.5 rounded-md uppercase tracking-wide">
+                                        {user.organization.name}
+                                    </span>
+                                </>
+                            )}
+                        </div>
                     </div>
-                    <div className="flex gap-1">
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setIsEditing(true)}>
-                            <PencilIcon className="w-4 h-4 text-gray-500" />
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="ghost" className="h-9 w-9 p-0 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" onClick={() => setIsEditing(true)}>
+                            <PencilIcon className="w-4 h-4" />
                         </Button>
                         <form action={onDelete}>
                             <input type="hidden" name="id" value={user.id} />
@@ -103,7 +130,7 @@ export function UserListItem({ user, organizations, currentUserId, onUpdate, onD
                                 variant="ghost"
                                 size="sm"
                                 type="submit"
-                                className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                                className="h-9 w-9 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 rounded-lg transition-colors"
                                 disabled={user.id === currentUserId}
                             >
                                 <TrashIcon className="w-4 h-4" />

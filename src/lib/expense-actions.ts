@@ -97,6 +97,9 @@ export async function createExpense(prevState: any, formData: FormData) {
     const targetUserId = formData.get('targetUserId') as string;
 
     const warnings = formData.get('warnings') as string;
+    const taxRate = formData.get('taxRate') ? Number(formData.get('taxRate')) : null;
+    const taxAmount = formData.get('taxAmount') ? Number(formData.get('taxAmount')) : null;
+    const confidence = formData.get('confidence') ? parseInt(formData.get('confidence') as string, 10) : null;
 
     // Convert date DD.MM.YYYY to ISO
     const [day, month, year] = dateStr.split('.')
@@ -141,9 +144,7 @@ export async function createExpense(prevState: any, formData: FormData) {
             }
         });
 
-        if (existing) {
-            return { message: 'Mükerrer Harcama: Bu harcama daha önce sisteme girilmiş.' };
-        }
+        const isDuplicate = !!existing;
 
         const receiptUrl = await uploadFile(receiptFile);
 
@@ -163,6 +164,15 @@ export async function createExpense(prevState: any, formData: FormData) {
             }
         }
 
+        let initialStatus = 'PENDING';
+
+        // AUTO-APPROVE LOGIC (Smart Rules)
+        // If confidence is very high, tax is separated, and it's not a duplicate, 
+        // and doesn't explicitly violate a policy (no warnings) -> Auto Approve
+        if (confidence && confidence >= 90 && !isDuplicate && !finalWarnings) {
+            initialStatus = 'APPROVED';
+        }
+
         await prisma.expense.create({
             data: {
                 amount: Number(amount),
@@ -172,6 +182,11 @@ export async function createExpense(prevState: any, formData: FormData) {
                 merchant: merchant?.trim(),
                 receiptUrl: receiptUrl,
                 warnings: finalWarnings || null, // Persist AI warnings + Policy warnings
+                taxRate: taxRate,
+                taxAmount: taxAmount,
+                confidence: confidence,
+                isDuplicate: isDuplicate,
+                status: initialStatus,
                 user: { connect: { id: userId } }, // Connect via relation
                 period: { connect: { id: activePeriod.id } }
 
@@ -367,6 +382,8 @@ export async function updateExpense(id: string, formData: FormData) {
     const category = formData.get('category') as string;
     const description = formData.get('description') as string;
     const merchant = formData.get('merchant') as string;
+    const taxRate = formData.get('taxRate') ? Number(formData.get('taxRate')) : null;
+    const taxAmount = formData.get('taxAmount') ? Number(formData.get('taxAmount')) : null;
 
     // Convert date
     const [day, month, year] = dateStr.split('.');
@@ -392,8 +409,10 @@ export async function updateExpense(id: string, formData: FormData) {
                 date: isoDate,
                 category,
                 description,
-                merchant
-            }
+                merchant,
+                taxRate,
+                taxAmount
+            } as any
         });
 
         revalidatePath('/dashboard/expenses');
@@ -401,5 +420,40 @@ export async function updateExpense(id: string, formData: FormData) {
     } catch (e) {
         console.error("Update expense error:", e);
         return { message: 'Güncelleme başarısız', success: false };
+    }
+}
+
+export async function bulkUpdateExpenses(ids: string[], newStatus: 'APPROVED' | 'REJECTED') {
+    const session = await auth();
+    if (!session?.user?.id) return { message: 'Not authenticated', success: false };
+
+    // Only Admins or Accountants should be able to bulk approve/reject typically,
+    // but we can allow it based on the role here.
+    if (session.user.role !== 'ADMIN' && session.user.role !== 'ACCOUNTANT') {
+        return { message: 'Bu işlem için yetkiniz yok.', success: false };
+    }
+
+    if (!ids || ids.length === 0) {
+        return { message: 'Seçili harcama bulunamadı.', success: false };
+    }
+
+    try {
+        await prisma.expense.updateMany({
+            where: {
+                id: { in: ids },
+                status: {
+                    in: ['PENDING', 'SUBMITTED'] // Only allow updating pending/submitted expenses
+                }
+            },
+            data: {
+                status: newStatus
+            }
+        });
+
+        revalidatePath('/dashboard/expenses');
+        return { success: true, message: `Seçili harcamalar ${newStatus === 'APPROVED' ? 'onaylandı' : 'reddedildi'}.` };
+    } catch (e) {
+        console.error("Bulk update error:", e);
+        return { message: 'Toplu güncelleme başarısız', success: false };
     }
 }

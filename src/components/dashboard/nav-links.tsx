@@ -48,15 +48,15 @@ export default function NavLinks({ role }: { role?: string }) {
                         key={link.name}
                         href={link.href}
                         className={clsx(
-                            'h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3 min-w-[60px]',
+                            'flex h-[48px] grow items-center justify-center gap-3 rounded-xl p-3 text-sm font-medium transition-all duration-200 md:flex-none md:justify-start md:p-2 md:px-4 min-w-[60px]',
                             {
-                                'bg-sky-100 text-blue-600': pathname === link.href,
+                                'bg-indigo-50 text-indigo-700 font-semibold shadow-sm ring-1 ring-indigo-100/50': pathname === link.href,
+                                'text-slate-600 hover:bg-slate-100/80 hover:text-indigo-900': pathname !== link.href,
                                 'hidden md:flex': link.href === '/dashboard/profile',
-                                'flex': link.href !== '/dashboard/profile',
                             },
                         )}
                     >
-                        <LinkIcon className="w-6" />
+                        <LinkIcon className={clsx("w-5 h-5", { "text-indigo-600": pathname === link.href })} />
                         <p className="hidden md:block">{link.name}</p>
                     </Link>
                 );

@@ -134,10 +134,10 @@ export function CreateFormWizard({
         <form action={handleSubmit} className="space-y-8 pb-20">
             {/* Admin User Selection */}
             {allUsers && allUsers.length > 0 && (
-                <div className="bg-white p-4 rounded shadow mb-6 border-l-4 border-yellow-400">
-                    <Label className="mb-2 block font-semibold text-yellow-800">Admin İşlemi: Kullanıcı Değiştir</Label>
+                <div className="bg-amber-50/50 p-5 rounded-xl border border-amber-200/50 mb-6 transition-all">
+                    <Label className="mb-2 block font-semibold text-amber-800">Admin İşlemi: Kullanıcı Değiştir</Label>
                     <select
-                        className="w-full border p-2 rounded bg-white"
+                        className="flex h-11 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
                         value={selectedUserId || ''}
                         onChange={(e) => {
                             window.location.href = `/dashboard/forms/create?userId=${e.target.value}`;
@@ -160,51 +160,52 @@ export function CreateFormWizard({
 
             {/* 1. Personal & Bank Info Review */}
             <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Kişisel Bilgiler</CardTitle>
+                <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
+                    <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+                        <CardTitle className="text-lg font-semibold text-slate-800 tracking-tight">Kişisel Bilgiler</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">Ad Soyad:</span>
-                            <span className="col-span-2 font-medium">{user.name}</span>
+                    <CardContent className="space-y-3 p-5 text-sm">
+                        <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                            <span className="text-slate-500 font-medium">Ad Soyad</span>
+                            <span className="font-semibold text-slate-800 text-right">{user.name}</span>
                         </div>
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">E-posta:</span>
-                            <span className="col-span-2 font-medium">{user.email}</span>
+                        <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                            <span className="text-slate-500 font-medium">E-posta</span>
+                            <span className="font-medium text-slate-800 text-right">{user.email}</span>
                         </div>
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">Telefon:</span>
-                            <span className="col-span-2 font-medium">{user.phone || 'Girilmemiş'}</span>
+                        <div className="flex justify-between items-center">
+                            <span className="text-slate-500 font-medium">Telefon</span>
+                            <span className="font-medium text-slate-800 text-right">{user.phone || '-'}</span>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Banka Bilgileri</CardTitle>
+                <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                    <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+                        <CardTitle className="text-lg font-semibold text-slate-800 tracking-tight">Banka Bilgileri</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">Banka:</span>
-                            <span className="col-span-2 font-medium">{user.bankName || 'Girilmemiş'}</span>
+                    <CardContent className="space-y-3 p-5 text-sm relative z-10">
+                        <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                            <span className="text-slate-500 font-medium">Banka</span>
+                            <span className="font-semibold text-slate-800 text-right">{user.bankName || '-'}</span>
                         </div>
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">IBAN:</span>
-                            <span className="col-span-2 font-mono">{user.iban || 'Girilmemiş'}</span>
+                        <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                            <span className="text-slate-500 font-medium">IBAN</span>
+                            <span className="font-mono text-xs md:text-sm text-slate-800 text-right bg-slate-100 px-2 py-1 rounded">{user.iban || '-'}</span>
                         </div>
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">Hesap Sahibi:</span>
-                            <span className="col-span-2 font-medium">{user.accountHolder || user.name}</span>
+                        <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                            <span className="text-slate-500 font-medium">Hesap Sahibi</span>
+                            <span className="font-medium text-slate-800 text-right">{user.accountHolder || user.name}</span>
                         </div>
-                        <div className="grid grid-cols-3">
-                            <span className="text-muted-foreground">Para Birimi:</span>
-                            <span className="col-span-2 font-medium">{user.currency || 'TRY'}</span>
+                        <div className="flex justify-between items-center">
+                            <span className="text-slate-500 font-medium">Para Birimi</span>
+                            <span className="font-medium text-slate-800 text-right bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md text-xs">{user.currency || 'TRY'}</span>
                         </div>
                         {!user.iban && (
-                            <div className="mt-2 text-amber-600 flex items-center gap-1 text-xs">
-                                <AlertCircle className="w-4 h-4" />
-                                <span>Lütfen profil sayfasından banka bilgilerinizi tamamlayın.</span>
+                            <div className="mt-3 p-3 bg-amber-50 text-amber-800 flex items-start gap-2 text-xs rounded-xl border border-amber-200/50">
+                                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                                <span className="font-medium">Lütfen profil sayfasından banka bilgilerinizi tamamlayın. Eksik bilgi ile yapılan talepler gecikebilir.</span>
                             </div>
                         )}
                     </CardContent>
@@ -212,15 +213,15 @@ export function CreateFormWizard({
             </div>
 
             {/* 2. Detail Section */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Form Detayları</CardTitle>
+            <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all">
+                <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+                    <CardTitle className="text-lg font-semibold text-slate-800 tracking-tight">Form Detayları</CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2 relative z-[60]">
-                        <Label>Organizasyon</Label>
+                <CardContent className="grid gap-5 md:gap-6 md:grid-cols-2 p-5 md:p-6">
+                    <div className="space-y-2.5 relative z-[60]">
+                        <Label className="text-slate-700 font-semibold text-sm">Organizasyon</Label>
                         <select
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 focus:bg-white"
                             value={selectedOrgId}
                             onChange={(e) => {
                                 setSelectedOrgId(e.target.value);
@@ -236,10 +237,10 @@ export function CreateFormWizard({
                         <input type="hidden" name="organizationId" value={selectedOrgId} />
                     </div>
 
-                    <div className="space-y-2 relative z-50">
-                        <Label>Proje ({projects.length})</Label>
+                    <div className="space-y-2.5 relative z-50">
+                        <Label className="text-slate-700 font-semibold text-sm">Proje ({projects.length})</Label>
                         <select
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 focus:bg-white"
                             value={selectedProjectId}
                             onChange={(e) => {
                                 console.log("Selected Project:", e.target.value);
@@ -256,10 +257,10 @@ export function CreateFormWizard({
                         <input type="hidden" name="projectId" value={selectedProjectId} />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Dönem ({periods.length})</Label>
+                    <div className="space-y-2.5">
+                        <Label className="text-slate-700 font-semibold text-sm">Dönem ({periods.length})</Label>
                         <select
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 bg-white"
+                            className="flex h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 focus:bg-white"
                             value={selectedPeriodId}
                             onChange={(e) => setSelectedPeriodId(e.target.value)}
                             disabled={!selectedProjectId}
@@ -273,146 +274,188 @@ export function CreateFormWizard({
                         <input type="hidden" name="periodId" value={selectedPeriodId} />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Bildirim Tarihi</Label>
+                    <div className="space-y-2.5">
+                        <Label className="text-slate-700 font-semibold text-sm">Bildirim Tarihi</Label>
                         <Input
                             value={notificationDate}
                             onChange={(e) => setNotificationDate(e.target.value)}
                             type="date"
-                            className="bg-white"
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus-visible:ring-indigo-500 shadow-sm"
                         />
                         <input type="hidden" name="submissionDate" value={notificationDate} />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="location">Lokasyon</Label>
+                    <div className="space-y-2.5 md:col-span-2">
+                        <Label htmlFor="location" className="text-slate-700 font-semibold text-sm">Lokasyon (Proje Sahası / Ofis vb.)</Label>
                         <Input
                             id="location"
-                            placeholder="Örn: İstanbul Ofis, Saha Görevi vb."
+                            placeholder="Örn: İstanbul Ana Ofis, Ankara Saha Görevi vb."
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             required
+                            className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus-visible:ring-indigo-500 shadow-sm"
                         />
                     </div>
                 </CardContent>
             </Card>
 
             {/* 3. Expense Summary Selection */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Harcama Özeti</CardTitle>
-                    <CardDescription>Forma dahil edilecek harcamaları seçiniz.</CardDescription>
+            <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all">
+                <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+                    <CardTitle className="text-lg font-semibold text-slate-800 tracking-tight">Harcama Özeti</CardTitle>
+                    <CardDescription className="text-slate-500 mt-1">Forma dahil edilecek harcamaları seçiniz.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto mb-4 border rounded-md p-2">
-                        {pendingExpenses.map((expense) => (
-                            <div key={expense.id} className="flex items-center space-x-3 border-b pb-2 last:border-0 last:pb-0 hover:bg-gray-50 p-2 rounded cursor-pointer" onClick={() => toggleExpense(expense.id)}>
-                                <input
-                                    type="checkbox"
-                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    checked={selectedExpenseIds.includes(expense.id)}
-                                    readOnly
-                                />
-                                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2 text-sm select-none">
-                                    <span className="text-muted-foreground">{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
-                                    <span className="font-medium">{expense.merchant}</span>
-                                    <span>{expense.category}</span>
-                                    <span className="font-bold text-right">₺{Number(expense.amount).toFixed(2)}</span>
-                                </div>
-                            </div>
-                        ))}
-                        {pendingExpenses.length === 0 && (
-                            <div className="text-center text-gray-400 py-4">Bu kullanıcı için bekleyen harcama yok.</div>
-                        )}
+                <CardContent className="p-0">
+                    <div className="max-h-[400px] overflow-y-auto w-full">
+                        <table className="w-full text-sm text-left border-collapse">
+                            <thead className="bg-white text-slate-500 font-semibold border-b border-slate-100 text-[11px] uppercase tracking-wider sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th className="px-4 py-3 w-12 text-center"></th>
+                                    <th className="px-4 py-3">Tarih</th>
+                                    <th className="px-4 py-3">İşyeri</th>
+                                    <th className="px-4 py-3">Kategori</th>
+                                    <th className="px-4 py-3 text-right">Tutar</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {pendingExpenses.map((expense) => (
+                                    <tr
+                                        key={expense.id}
+                                        onClick={() => toggleExpense(expense.id)}
+                                        className={`hover:bg-slate-50/80 cursor-pointer transition-colors ${selectedExpenseIds.includes(expense.id) ? 'bg-indigo-50/30' : ''}`}
+                                    >
+                                        <td className="px-4 py-3 text-center align-middle">
+                                            <input
+                                                type="checkbox"
+                                                className="rounded border-slate-300 w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-all"
+                                                checked={selectedExpenseIds.includes(expense.id)}
+                                                readOnly
+                                            />
+                                        </td>
+                                        <td className="px-4 py-3 text-slate-500">{new Date(expense.date).toLocaleDateString('tr-TR')}</td>
+                                        <td className="px-4 py-3 font-semibold text-slate-700">{expense.merchant || '-'}</td>
+                                        <td className="px-4 py-3">
+                                            <span className="inline-block bg-slate-100 text-slate-600 rounded-md px-2 py-0.5 text-xs font-medium">
+                                                {expense.category}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-right font-bold text-slate-800">
+                                            ₺{Number(expense.amount).toFixed(2)}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {pendingExpenses.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="text-center text-slate-400 py-8 italic bg-slate-50/50">
+                                            Bu kullanıcı için bekleyen harcama yok.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
-                    <div className="flex justify-end items-center gap-2 text-lg font-bold border-t pt-4">
-                        <span>Toplam Tutar:</span>
-                        <span className="text-primary">{totalAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</span>
+                    <div className="flex justify-between items-center p-5 md:p-6 bg-slate-50/50 border-t border-slate-100">
+                        <span className="text-base font-semibold text-slate-600">Seçilen Toplam:</span>
+                        <span className="text-2xl font-bold tracking-tight text-indigo-700">
+                            {totalAmount.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                        </span>
                     </div>
                 </CardContent>
             </Card>
 
             {/* 4. Approvals */}
-            <Card className="border-blue-200 bg-blue-50/20">
-                <CardHeader>
-                    <CardTitle>Onaylar</CardTitle>
-                    <CardDescription>Ödeme talebi oluşturmadan önce lütfen aşağıdaki adımları onaylayın.</CardDescription>
+            <Card className="border-indigo-100 shadow-md rounded-2xl overflow-hidden group hover:shadow-lg transition-all relative mt-8">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-white to-teal-500/5 pointer-events-none"></div>
+                <CardHeader className="bg-indigo-50/80 border-b border-indigo-100/50 pb-5 relative z-10">
+                    <CardTitle className="text-xl font-bold text-indigo-900 tracking-tight">Onaylar & Taahhütler</CardTitle>
+                    <CardDescription className="text-indigo-700/70 mt-1">Ödeme talebi oluşturmadan önce lütfen aşağıdaki adımları dikkatlice okuyup onaylayın.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 pt-6 relative z-10">
 
                     {/* Receipts Logic */}
                     <div className="space-y-3">
-                        <Label className="text-base font-semibold">Fiş ve Faturalar</Label>
-                        <div className="flex flex-col space-y-2">
-                            <div className="flex items-center space-x-2">
+                        <Label className="text-base font-bold text-slate-800">Fiziksel Belge Durumu</Label>
+                        <div className="flex flex-col space-y-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                            <label className={`flex items-start space-x-3 p-3 rounded-lg border transition-all cursor-pointer ${receiptsDelivered === "yes" ? 'bg-indigo-50/50 border-indigo-200 shadow-sm' : 'border-transparent hover:bg-slate-50'}`}>
                                 <input
                                     type="radio"
-                                    id="r-yes"
                                     name="receipts"
-                                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="mt-1 h-4 w-4 border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer"
                                     checked={receiptsDelivered === "yes"}
                                     onChange={() => setReceiptsDelivered("yes")}
                                 />
-                                <Label htmlFor="r-yes">Fiş ve faturaların asıllarını teslim ettim.</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
+                                <div className="flex flex-col cursor-pointer">
+                                    <span className="text-sm font-semibold text-slate-700">Fiş ve faturaların asıllarını teslim ettim.</span>
+                                    <span className="text-xs text-slate-500 mt-0.5">Muhasebe departmanına fiziksel belgeler ulaşmıştır.</span>
+                                </div>
+                            </label>
+
+                            <label className={`flex items-start space-x-3 p-3 rounded-lg border transition-all cursor-pointer ${receiptsDelivered === "no" ? 'bg-amber-50/50 border-amber-200 shadow-sm' : 'border-transparent hover:bg-slate-50'}`}>
                                 <input
                                     type="radio"
-                                    id="r-no"
                                     name="receipts"
-                                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    className="mt-1 h-4 w-4 border-slate-300 text-amber-600 focus:ring-amber-500 transition-all cursor-pointer"
                                     checked={receiptsDelivered === "no"}
                                     onChange={() => setReceiptsDelivered("no")}
                                 />
-                                <Label htmlFor="r-no">Fiş ve faturaların asıllarını henüz teslim etmedim.</Label>
-                            </div>
+                                <div className="flex flex-col cursor-pointer">
+                                    <span className="text-sm font-semibold text-slate-700">Fiş ve faturaların asıllarını henüz teslim etmedim.</span>
+                                    <span className="text-xs text-amber-600/80 mt-0.5 font-medium">Ödemenin yapılması için asılların teslimi gerekebilir.</span>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
-                    <Separator className="bg-blue-100" />
+                    <Separator className="bg-slate-200/60" />
 
                     {/* Verification Logic */}
                     <div className="space-y-3">
-                        <Label className="text-base font-semibold">Bilgi Doğruluğu</Label>
-                        <div className="flex items-start space-x-2 p-3 bg-white rounded border border-blue-100">
+                        <Label className="text-base font-bold text-slate-800">Bilgi Doğruluğu & Yasal Onay</Label>
+                        <label className={`flex items-start space-x-3 p-4 bg-white rounded-xl border transition-all shadow-sm cursor-pointer ${infoVerified ? 'border-emerald-300 bg-emerald-50/30' : 'border-slate-200 border-l-4 border-l-indigo-400 hover:shadow-md'}`}>
                             <input
                                 type="checkbox"
-                                id="verify"
-                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-1"
+                                className="h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mt-0.5 cursor-pointer transition-all"
                                 checked={infoVerified}
                                 onChange={(e) => setInfoVerified(e.target.checked)}
                             />
-                            <div className="grid gap-1.5 leading-none">
-                                <Label
-                                    htmlFor="verify"
-                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                    Yukarıdaki banka ve iletişim bilgilerimin doğruluğunu onaylıyorum.
-                                </Label>
-                                <p className="text-xs text-muted-foreground">
-                                    Hatalı bildirimlerden doğacak sorumluluğu kabul ediyorum.
-                                </p>
+                            <div className="flex flex-col leading-snug cursor-pointer">
+                                <span className={`text-sm font-bold transition-colors ${infoVerified ? 'text-emerald-800' : 'text-slate-700'}`}>
+                                    Yukarıdaki beyan edilen bilgilerin, banka hesaplarımın ve eklenen harcamaların doğruluğunu vicdanen ve hukuken onaylıyorum.
+                                </span>
+                                <span className="text-xs text-slate-500 mt-1.5 font-medium">
+                                    Hatalı bildirimlerden doğacak kurumsal sorumluluğu peşinen kabul ediyorum. Şirket politikalarına aykırı harcamaların maaşımdan kesilebileceğini biliyorum.
+                                </span>
                             </div>
-                        </div>
+                        </label>
                     </div>
 
                 </CardContent>
             </Card>
 
-            <div className="sticky bottom-4 z-10 mx-auto max-w-2xl shadow-2xl rounded-lg">
+            <div className="sticky bottom-6 z-40 mx-auto max-w-2xl mt-10">
                 <Button
                     size="lg"
-                    className="w-full text-lg h-14 bg-green-600 hover:bg-green-700 shadow-xl transition-all active:scale-[0.98]"
+                    className={`w-full text-lg h-16 font-bold shadow-2xl transition-all duration-300 rounded-2xl ${infoVerified && selectedExpenseIds.length > 0 && !loading
+                            ? 'bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1'
+                            : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                        }`}
                     disabled={loading || selectedExpenseIds.length === 0 || !infoVerified}
                 >
                     {loading ? (
-                        <div className="flex items-center gap-2">
-                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            <span>İşleniyor...</span>
+                        <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
+                            <span>Sisteme İşleniyor...</span>
                         </div>
                     ) : (
-                        <span>Ödeme İste</span>
+                        <div className="flex items-center gap-2">
+                            <span>Resmi Ödeme Formunu Oluştur ve Gönder</span>
+                        </div>
                     )}
                 </Button>
+                {(!infoVerified || selectedExpenseIds.length === 0) && (
+                    <p className="text-center text-xs font-semibold text-slate-500 mt-3 mix-blend-multiply opacity-80 backdrop-blur-sm bg-white/50 py-1 px-4 rounded-full w-max mx-auto border border-black/5">
+                        Devam etmek için en az bir harcama seçmeli ve onay kutusunu işaretlemelisiniz.
+                    </p>
+                )}
             </div>
         </form>
     );

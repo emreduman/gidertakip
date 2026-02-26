@@ -18,10 +18,13 @@ export function KPICards({ totalSpend, pendingAmount, approvedAmount, rejectedAm
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Toplam Harcama</CardTitle>
-                    <Wallet className="h-4 w-4 text-muted-foreground" />
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white border-slate-200 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-blue-500/10"></div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-slate-600">Toplam Harcama</CardTitle>
+                    <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-blue-50 transition-colors">
+                        <Wallet className="h-4 w-4 text-blue-600" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(totalSpend)}</div>
@@ -34,10 +37,13 @@ export function KPICards({ totalSpend, pendingAmount, approvedAmount, rejectedAm
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Onaylanan</CardTitle>
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white border-slate-200 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-green-500/10"></div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-slate-600">Onaylanan</CardTitle>
+                    <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-green-50 transition-colors">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(approvedAmount)}</div>
@@ -47,10 +53,13 @@ export function KPICards({ totalSpend, pendingAmount, approvedAmount, rejectedAm
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Bekleyen</CardTitle>
-                    <CreditCard className="h-4 w-4 text-yellow-500" />
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white border-slate-200 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-amber-500/10"></div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-slate-600">Bekleyen</CardTitle>
+                    <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-amber-50 transition-colors">
+                        <CreditCard className="h-4 w-4 text-amber-600" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(pendingAmount)}</div>
@@ -60,10 +69,13 @@ export function KPICards({ totalSpend, pendingAmount, approvedAmount, rejectedAm
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Reddedilen</CardTitle>
-                    <AlertCircle className="h-4 w-4 text-red-500" />
+            <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white border-slate-200 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl -mr-8 -mt-8 transition-all group-hover:bg-red-500/10"></div>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-slate-600">Reddedilen</CardTitle>
+                    <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-red-50 transition-colors">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{formatCurrency(rejectedAmount)}</div>

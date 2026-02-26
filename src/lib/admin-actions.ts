@@ -29,6 +29,7 @@ export async function createProject(formData: FormData) {
     await checkAdmin();
     const name = formData.get('name') as string;
     const organizationId = formData.get('organizationId') as string;
+    const budget = formData.get('budget') ? Number(formData.get('budget')) : null;
 
     if (!name || !organizationId) {
         console.error("Missing fields for Project creation:", { name, organizationId });
@@ -36,7 +37,7 @@ export async function createProject(formData: FormData) {
     }
 
     await prisma.project.create({
-        data: { name, organizationId }
+        data: { name, organizationId, budget }
     });
     revalidatePath('/dashboard/admin');
 }
@@ -47,6 +48,7 @@ export async function createPeriod(formData: FormData) {
     const projectId = formData.get('projectId') as string;
     const startDateVal = formData.get('startDate') as string;
     const endDateVal = formData.get('endDate') as string;
+    const budget = formData.get('budget') ? Number(formData.get('budget')) : null;
 
     if (!name || !projectId || !startDateVal || !endDateVal) {
         console.error("Missing fields for Period creation");
@@ -57,7 +59,7 @@ export async function createPeriod(formData: FormData) {
     const endDate = new Date(endDateVal);
 
     await prisma.period.create({
-        data: { name, projectId, startDate, endDate, isActive: true }
+        data: { name, projectId, startDate, endDate, isActive: true, budget }
     });
     revalidatePath('/dashboard/admin');
 }

@@ -9,6 +9,9 @@ export interface ParsedExpense {
     category?: string;
     description?: string;
     merchant?: string;
+    taxRate?: number;
+    taxAmount?: number;
+    confidence: number;
     warnings: string[];
     isBoardingPass: boolean;
     rawResponse?: any;
@@ -27,6 +30,9 @@ export async function parseReceipt(
     - merchant (name of the place)
     - category (suggest a category like Food, Transport, Accommodation, Office Supplies, etc.)
     - description (brief description of items)
+    - taxRate (the VAT/KDV rate applied, e.g. 10, 20. If multiple, use the highest or most prominent. Treat as percentage number)
+    - taxAmount (the total VAT/KDV amount extracted from the receipt, as a number)
+    - confidence (a number between 0 and 100 indicating how confident you are in your reading and categorization)
     - isBoardingPass (boolean, true if it looks like a plane/bus ticket or boarding pass)
     - isInfoSlip (boolean, true if it says "Bilgi Fişi", "Mali Değeri Yoktur" or seemingly has no financial value)
 
@@ -68,6 +74,9 @@ export async function parseReceipt(
                 category: data.category,
                 description: data.description,
                 merchant: data.merchant,
+                taxRate: data.taxRate,
+                taxAmount: data.taxAmount,
+                confidence: data.confidence || 50,
                 warnings: warnings,
                 isBoardingPass: data.isBoardingPass || false,
                 rawResponse: data
@@ -83,4 +92,53 @@ export async function parseReceipt(
         const msg = error?.response?.data?.error?.message || error.message || "Bilinmeyen hata";
         throw new Error(`AI Servis Hatası: ${msg}`);
     }
+}
+
+export async function analyzeReceiptWithGemini(
+    fileUrl: string,
+    mimeType: string,
+    fileBuffer: Buffer
+): Promise<{
+    date: Date;
+    amount: number;
+    category?: string;
+    description?: string;
+    merchant?: string;
+    taxRate?: number;
+    taxAmount?: number;
+    confidence: number;
+    warnings: string[];
+}> {
+    // Determine the base64 string
+    const base64Data = fileBuffer.toString("base64");
+
+    // Call the existing parseReceipt function
+    const parsed = await parseReceipt({
+        inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+        }
+    });
+
+    // Handle date formatting
+    let parsedDate = new Date();
+    if (parsed.date) {
+        // Assume DD.MM.YYYY
+        const parts = parsed.date.split('.');
+        if (parts.length === 3) {
+            parsedDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+        }
+    }
+
+    return {
+        date: parsedDate,
+        amount: Number(parsed.amount) || 0,
+        category: parsed.category,
+        description: parsed.description,
+        merchant: parsed.merchant,
+        taxRate: Number(parsed.taxRate) || 0,
+        taxAmount: Number(parsed.taxAmount) || 0,
+        confidence: Number(parsed.confidence) || 0,
+        warnings: parsed.warnings || [],
+    };
 }

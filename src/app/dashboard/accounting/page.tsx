@@ -47,10 +47,11 @@ export default async function AccountingPage() {
     }));
 
     return (
-        <main>
-            <h1 className="mb-6 text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Muhasebe Paneli
-            </h1>
+        <main className="max-w-7xl mx-auto pb-12">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Muhasebe Paneli</h1>
+                <p className="text-slate-500 mt-2">Personel masraf formlarını inceleyin, onaylayın veya reddedin.</p>
+            </div>
 
             <AccountingView
                 pendingForms={serialize(pendingForms)}

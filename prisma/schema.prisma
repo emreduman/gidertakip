@@ -125,6 +125,8 @@ model Project {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   periods        Period[]
 
+  budget         Decimal?     @db.Decimal(10, 2)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -140,6 +142,8 @@ model Period {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   
   expenses  Expense[]
+
+  budget    Decimal?  @db.Decimal(10, 2)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -158,6 +162,12 @@ model Expense {
   isAiParsed  Boolean  @default(false)
   aiData      Json?    // Store raw AI response or confidence scores
   warnings    String?  // Store AI warnings (e.g. "Bilgi Fişi")
+  
+  // Productivity Fields
+  taxRate     Decimal? @db.Decimal(5, 2)
+  taxAmount   Decimal? @db.Decimal(10, 2)
+  confidence  Int?
+  isDuplicate Boolean  @default(false)
   
   status      ExpenseStatus @default(PENDING)
   rejectionReason String?

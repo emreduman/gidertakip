@@ -8,6 +8,7 @@ import { KPICards } from "@/components/dashboard/kpi-cards"
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters"
 import { prisma } from "@/lib/prisma"
 import { NotificationBell } from "@/components/dashboard/notification-bell"
+import { BudgetProgress } from "@/components/dashboard/budget-progress"
 
 // Function to get date range from period
 function getDateRange(year: number, period: string) {
@@ -133,37 +134,64 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
         .slice(0, 5)
         .map(([name, value]) => ({ name, value }));
 
+    // 5. Active Period & Budget
+    const activePeriod = await prisma.period.findFirst({
+        where: {
+            isActive: true,
+            startDate: { lte: end },
+            endDate: { gte: start }
+        }
+    });
+
+    const periodSpend = activePeriod
+        ? expensesInRange.filter(e => e.periodId === activePeriod.id && e.status !== 'REJECTED').reduce((sum, e) => sum + Number(e.amount), 0)
+        : 0;
 
 
 
     return (
-        <main className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Harcama Özeti</h1>
-                    <p className="text-sm text-muted-foreground">
-                        {year} yılı {period === 'all' ? 'genel özeti' : `${period} dönemi özeti`}
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    {/* Welcome Text */}
-                    <div className="text-sm text-muted-foreground hidden md:block">
-                        Hoş geldin, <Link href="/dashboard/profile" className="font-semibold text-foreground hover:underline">{session?.user?.name}</Link>
+        <main className="space-y-6 pb-8">
+            {/* Premium Header */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-800 to-indigo-950 p-6 shadow-lg text-white mb-8">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight mb-1">Harcama Özeti</h1>
+                        <p className="text-indigo-200 font-medium">
+                            {year} yılı {period === 'all' ? 'genel özeti' : `${period} dönemi özeti`}
+                        </p>
                     </div>
-                    {/* Desktop Notification Bell */}
-                    <div className="hidden md:block">
-                        <NotificationBell />
+
+                    <div className="flex items-center gap-4">
+                        {/* Welcome Text */}
+                        <div className="text-sm md:text-base text-indigo-100 hidden md:block">
+                            Hoş geldin, <Link href="/dashboard/profile" className="font-semibold text-white hover:text-indigo-200 transition-colors">{session?.user?.name}</Link>
+                        </div>
+                        {/* Desktop Notification Bell */}
+                        <div className="hidden md:block bg-white/10 p-2 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors">
+                            <NotificationBell />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="w-full">
+            <div className="w-full bg-white p-2 rounded-2xl shadow-sm border border-slate-100 relative z-20 -mt-10 mx-auto max-w-5xl">
                 <React.Suspense fallback={<div className="h-14 bg-gray-100 rounded-lg animate-pulse" />}>
                     <DashboardFilters />
                 </React.Suspense>
             </div>
+
+            {/* Budget Progress (Only show if there's an active period with a budget) */}
+            {(activePeriod as any)?.budget && Number((activePeriod as any).budget) > 0 && (
+                <div className="w-full">
+                    <BudgetProgress
+                        periodName={activePeriod?.name || ''}
+                        targetBudget={Number((activePeriod as any).budget)}
+                        currentSpend={periodSpend}
+                    />
+                </div>
+            )}
 
             {/* KPI Cards */}
             <KPICards
@@ -174,26 +202,26 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                 percentageChange={percentageChange}
             />
 
-            <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-7 w-full max-w-full overflow-hidden">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 w-full max-w-full overflow-hidden mt-6">
                 {/* Main Chart */}
-                <div className="col-span-4 rounded-xl border bg-card text-card-foreground shadow overflow-hidden">
-                    <div className="p-4 md:p-6 pb-2">
-                        <h3 className="tracking-tight text-sm font-medium">Harcama Trendi</h3>
+                <div className="col-span-4 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all hover:shadow-md">
+                    <div className="p-5 md:p-6 pb-2 border-b border-slate-100 bg-slate-50/50">
+                        <h3 className="tracking-tight text-base font-semibold text-slate-800">Harcama Trendi</h3>
                     </div>
-                    <div className="p-4 md:p-6 pt-0 pl-2">
+                    <div className="p-4 md:p-6 pt-6 pl-2">
                         <OverviewChart data={chartData} />
                     </div>
                 </div>
 
                 {/* Right Column: Recent & Categories */}
-                <div className="col-span-3 space-y-4 md:space-y-6 w-full max-w-full overflow-hidden">
+                <div className="col-span-3 space-y-6 w-full max-w-full overflow-hidden">
                     {/* Top Categories */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6 overflow-hidden">
-                        <h3 className="font-semibold mb-4 text-sm md:text-base">En Çok Harcanan Kategoriler</h3>
+                    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5 md:p-6 overflow-hidden transition-all hover:shadow-md">
+                        <h3 className="font-semibold mb-5 text-base text-slate-800">En Çok Harcanan Kategoriler</h3>
                         {topCategories.length === 0 ? (
-                            <p className="text-sm text-gray-500">Veri yok.</p>
+                            <p className="text-sm text-slate-500 italic">Veri yok.</p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {topCategories.map((cat, idx) => (
 
                                     <div key={cat.name} className="flex items-center justify-between gap-2">
@@ -209,20 +237,23 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="rounded-xl border bg-card text-card-foreground shadow p-4 md:p-6 overflow-hidden">
-                        <h3 className="font-semibold mb-4 text-sm md:text-base">Son Aktiviteler</h3>
+                    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5 md:p-6 overflow-hidden transition-all hover:shadow-md">
+                        <h3 className="font-semibold mb-5 text-base text-slate-800">Son Aktiviteler</h3>
                         {recentExpenses.length === 0 ? (
-                            <p className="text-sm text-gray-500">Bu dönemde aktivite yok.</p>
+                            <p className="text-sm text-slate-500 italic">Bu dönemde aktivite yok.</p>
                         ) : (
                             <div className="space-y-4">
                                 {recentExpenses.map(expense => (
-                                    <div key={expense.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0 gap-2">
-                                        <div className="flex flex-col min-w-0 flex-1">
-                                            <span className="font-medium text-sm truncate">{expense.merchant || 'Bilinmeyen'}</span>
-                                            <span className="text-xs text-gray-500 truncate">{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
+                                    <div key={expense.id} className="flex items-center justify-between border-b border-slate-100 pb-3 last:border-0 last:pb-0 gap-3 group">
+                                        <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold shrink-0">
+                                            {expense.merchant ? expense.merchant.substring(0, 1).toUpperCase() : '?'}
                                         </div>
-                                        <div className="font-bold text-sm text-red-600 whitespace-nowrap">
-                                            -{formatCurrency(Number(expense.amount))}
+                                        <div className="flex flex-col min-w-0 flex-1">
+                                            <span className="font-semibold text-sm text-slate-700 truncate group-hover:text-indigo-700 transition-colors">{expense.merchant || 'Bilinmeyen'}</span>
+                                            <span className="text-xs text-slate-500 truncate">{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
+                                        </div>
+                                        <div className="font-bold text-sm text-slate-800 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md">
+                                            {formatCurrency(Number(expense.amount))}
                                         </div>
                                     </div>
                                 ))}

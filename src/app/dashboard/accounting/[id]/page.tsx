@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ReviewActions } from "@/components/accounting/review-actions"
 import { ReceiptViewer } from "@/components/accounting/receipt-viewer"
-import { CalendarIcon, CreditCardIcon, MailIcon, PhoneIcon, AlertCircle } from "lucide-react"
+import { CalendarIcon, CreditCardIcon, MailIcon, PhoneIcon, AlertCircle, CheckCircle2, FileTextIcon } from "lucide-react"
 
 export default async function AccountingDetailPage(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
@@ -37,29 +37,36 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
     return (
         <div className="space-y-6 max-w-7xl mx-auto pb-20">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <h1 className="text-2xl font-bold tracking-tight">Masraf Formu #{form.formNumber}</h1>
-                        <Badge className={`${statusColors[form.status] || "bg-gray-100"} border-0`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                            Masraf Formu <span className="text-slate-400">#{form.formNumber}</span>
+                        </h1>
+                        <Badge className={`${statusColors[form.status] || "bg-slate-100"} border-0 px-3 py-1 uppercase tracking-wider text-[10px] font-bold`}>
                             {form.status}
                         </Badge>
                     </div>
-                    <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                        <CalendarIcon className="w-4 h-4" />
-                        <span>Gönderim: {new Date(form.submittedAt).toLocaleDateString('tr-TR', { dateStyle: 'long' })}</span>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 font-medium">
+                        <div className="flex items-center gap-1.5">
+                            <CalendarIcon className="w-4 h-4 text-slate-400" />
+                            <span>Gönderim: {new Date(form.submittedAt).toLocaleDateString('tr-TR', { dateStyle: 'long' })}</span>
+                        </div>
                         {form.processedAt && (
-                            <>
-                                <span>•</span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-slate-300 hidden sm:inline">•</span>
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                 <span>İşlem: {new Date(form.processedAt).toLocaleDateString('tr-TR')}</span>
-                            </>
+                            </div>
                         )}
                     </div>
                 </div>
 
                 {/* Actions */}
                 {form.status === 'SUBMITTED' && (
-                    <ReviewActions formId={form.id} />
+                    <div className="shrink-0">
+                        <ReviewActions formId={form.id} />
+                    </div>
                 )}
             </div>
 
@@ -70,55 +77,61 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
 
                     {/* Summary Cards */}
                     <div className="grid grid-cols-2 gap-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Toplam Tutar</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-primary">
-                                    {Number(form.totalAmount).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Gider Kalemi</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{form.expenses.length} Adet</div>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                                <CreditCardIcon className="w-24 h-24 text-indigo-600" />
+                            </div>
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Toplam Tutar</h3>
+                            <div className="text-3xl font-bold text-slate-800 tracking-tight">
+                                {Number(form.totalAmount).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                                <FileTextIcon className="w-24 h-24 text-teal-600" />
+                            </div>
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Gider Kalemi</h3>
+                            <div className="text-3xl font-bold text-slate-800 tracking-tight">
+                                {form.expenses.length} <span className="text-lg text-slate-400 font-medium">Adet</span>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Expenses List - Desktop Table / Mobile Card */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Harcama Detayları</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0">
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+                            <h3 className="text-lg font-bold text-slate-800">Harcama Detayları</h3>
+                        </div>
+                        <div className="p-0">
                             {/* Mobile View */}
-                            <div className="md:hidden divide-y">
+                            <div className="md:hidden divide-y divide-slate-100">
                                 {form.expenses.map((expense: any) => (
-                                    <div key={expense.id} className="p-4 flex gap-4">
+                                    <div key={expense.id} className="p-5 flex gap-4 hover:bg-slate-50/50 transition-colors">
                                         <div className="shrink-0">
                                             {expense.receiptUrl ? (
                                                 <ReceiptViewer url={expense.receiptUrl} />
                                             ) : (
-                                                <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
+                                                <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-xs font-medium text-slate-400 border border-slate-200">
                                                     Yok
                                                 </div>
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <div className="font-medium text-sm truncate pr-2">{expense.category || 'Diğer'}</div>
-                                                <div className="font-bold text-sm shrink-0">{Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</div>
+                                            <div className="flex justify-between items-start mb-1.5">
+                                                <div className="font-semibold text-sm text-slate-800 truncate pr-2">{expense.category || 'Diğer'}</div>
+                                                <div className="font-bold text-sm text-slate-900 shrink-0 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100/50">
+                                                    {Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-muted-foreground break-words line-clamp-2 mb-1">{expense.description}</div>
-                                            <div className="text-xs text-gray-500">{expense.merchant} • {new Date(expense.date).toLocaleDateString('tr-TR')}</div>
+                                            <div className="text-xs text-slate-500 break-words line-clamp-2 mb-2 leading-relaxed">{expense.description}</div>
+                                            <div className="text-[11px] font-medium text-slate-400 bg-slate-100 w-fit px-2 py-1 rounded inline-flex items-center gap-1.5">
+                                                <span>{expense.merchant}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                <span>{new Date(expense.date).toLocaleDateString('tr-TR')}</span>
+                                            </div>
                                             {expense.warnings && (
-                                                <Badge variant="outline" className="mt-2 border-yellow-500 text-yellow-600 text-[10px] px-1 py-0 h-auto inline-flex whitespace-normal text-left">
-                                                    <AlertCircle className="w-3 h-3 shrink-0 mr-1" /> {expense.warnings}
+                                                <Badge variant="outline" className="mt-2 border-amber-200 bg-amber-50 text-amber-700 text-[10px] px-2 py-1 h-auto inline-flex whitespace-normal text-left">
+                                                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mr-1.5 text-amber-500" /> {expense.warnings}
                                                 </Badge>
                                             )}
                                         </div>
@@ -128,48 +141,50 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
 
                             {/* Desktop View */}
                             <Table className="hidden md:table">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-[80px]">Fiş</TableHead>
-                                        <TableHead>Kategori / Açıklama</TableHead>
-                                        <TableHead>Tarih & Tedarikçi</TableHead>
-                                        <TableHead className="text-right">Tutar</TableHead>
+                                <TableHeader className="bg-slate-50/50">
+                                    <TableRow className="hover:bg-transparent border-slate-100">
+                                        <TableHead className="w-[100px] text-xs font-bold text-slate-500 uppercase tracking-wider py-4 px-6">Fiş Görseli</TableHead>
+                                        <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider py-4">Kategori / Açıklama</TableHead>
+                                        <TableHead className="text-xs font-bold text-slate-500 uppercase tracking-wider py-4">Tarih & Tedarikçi</TableHead>
+                                        <TableHead className="text-right text-xs font-bold text-slate-500 uppercase tracking-wider py-4 px-6">Tutar</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody>
+                                <TableBody className="divide-y divide-slate-100">
                                     {form.expenses.map((expense: any) => (
-                                        <TableRow key={expense.id}>
-                                            <TableCell className="align-top py-4">
+                                        <TableRow key={expense.id} className="hover:bg-slate-50/50 transition-colors border-0">
+                                            <TableCell className="align-top py-5 px-6">
                                                 {expense.receiptUrl ? (
                                                     <ReceiptViewer url={expense.receiptUrl} />
                                                 ) : (
-                                                    <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">
+                                                    <div className="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-xs font-medium text-slate-400 border border-slate-200">
                                                         Yok
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="align-top py-4 max-w-[200px] xl:max-w-none">
-                                                <div className="font-medium text-sm">{expense.category || 'Diğer'}</div>
-                                                <div className="text-sm text-muted-foreground line-clamp-2 mt-1 break-words">{expense.description}</div>
+                                            <TableCell className="align-top py-5 max-w-[250px] xl:max-w-none">
+                                                <div className="font-semibold text-sm text-slate-800">{expense.category || 'Diğer'}</div>
+                                                <div className="text-sm text-slate-500 line-clamp-2 mt-1.5 break-words leading-relaxed">{expense.description}</div>
                                                 {expense.warnings && (
-                                                    <Badge variant="outline" className="mt-2 border-yellow-500 text-yellow-600 text-[10px] px-1 py-0 h-5 gap-1 inline-flex">
-                                                        <AlertCircle className="w-3 h-3" /> {expense.warnings}
+                                                    <Badge variant="outline" className="mt-3 border-amber-200 bg-amber-50 text-amber-700 text-[10px] px-2 py-1 h-auto inline-flex gap-1.5 rounded-md">
+                                                        <AlertCircle className="w-3.5 h-3.5 text-amber-500" /> {expense.warnings}
                                                     </Badge>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="align-top whitespace-nowrap py-4">
-                                                <div className="text-sm font-medium">{expense.merchant}</div>
-                                                <div className="text-xs text-muted-foreground mt-1">{new Date(expense.date).toLocaleDateString('tr-TR')}</div>
+                                            <TableCell className="align-top whitespace-nowrap py-5">
+                                                <div className="text-sm font-semibold text-slate-700">{expense.merchant}</div>
+                                                <div className="text-xs font-medium text-slate-400 mt-1">{new Date(expense.date).toLocaleDateString('tr-TR')}</div>
                                             </TableCell>
-                                            <TableCell className="text-right font-medium align-top py-4">
-                                                {Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺
+                                            <TableCell className="text-right align-top py-5 px-6">
+                                                <div className="inline-flex items-center gap-1.5 font-bold text-slate-900 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-md border border-emerald-100/50">
+                                                    {Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     {/* Rejection Reason display if rejected */}
                     {form.status === 'REJECTED' && form.rejectionReason && (
@@ -185,73 +200,80 @@ export default async function AccountingDetailPage(props: { params: Promise<{ id
 
                 {/* Right Column: User Info (1/3 width) */}
                 <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Kullanıcı Bilgileri</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <Avatar className="h-12 w-12 border">
-                                    <AvatarImage src={form.user.image || ''} />
-                                    <AvatarFallback>{form.user.name?.charAt(0) || 'U'}</AvatarFallback>
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+                            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Kullanıcı Bilgileri</h3>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="h-14 w-14 border-2 border-white shadow-md rounded-xl">
+                                    <AvatarImage src={form.user.image || ''} className="rounded-xl" />
+                                    <AvatarFallback className="rounded-xl bg-indigo-50 text-indigo-700 font-bold">{form.user.name?.charAt(0) || 'U'}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <div className="font-semibold">{form.user.name}</div>
-                                    <div className="text-xs text-muted-foreground">{form.user.role}</div>
+                                    <div className="font-bold text-slate-900 text-lg">{form.user.name}</div>
+                                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide mt-1">
+                                        {form.user.role}
+                                    </Badge>
                                 </div>
                             </div>
 
-                            <Separator />
+                            <Separator className="bg-slate-100" />
 
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2 text-sm">
-                                    <MailIcon className="w-4 h-4 text-muted-foreground" />
-                                    <span className="truncate" title={form.user.email || ''}>{form.user.email}</span>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                                        <MailIcon className="w-4 h-4 text-slate-400" />
+                                    </div>
+                                    <span className="truncate font-medium" title={form.user.email || ''}>{form.user.email}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <PhoneIcon className="w-4 h-4 text-muted-foreground" />
-                                    <span>{form.user.phone || 'Telefon yok'}</span>
+                                <div className="flex items-center gap-3 text-sm text-slate-600">
+                                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                                        <PhoneIcon className="w-4 h-4 text-slate-400" />
+                                    </div>
+                                    <span className="font-medium">{form.user.phone || 'Telefon yok'}</span>
                                 </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-sm">
-                                        <CreditCardIcon className="w-4 h-4 text-muted-foreground" />
-                                        <span className="font-semibold text-xs">Banka Bilgileri</span>
+                                <div className="space-y-2 pt-2">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <CreditCardIcon className="w-4 h-4 text-indigo-500" />
+                                        <span className="font-bold text-xs text-slate-500 uppercase tracking-wider">Banka Bilgileri</span>
                                     </div>
                                     {/* Cast to any to access new fields for now if TS is stale */}
-                                    <div className="pl-6 text-xs text-muted-foreground space-y-1 bg-slate-50 p-2 rounded">
-                                        {(form.user as any).bankName && <p><span className="font-medium">Banka:</span> {(form.user as any).bankName} {(form.user as any).bankBranch && `(${(form.user as any).bankBranch})`}</p>}
-                                        {(form.user as any).accountHolder && <p><span className="font-medium">Sahibi:</span> {(form.user as any).accountHolder}</p>}
-                                        <p className="font-mono break-all"><span className="font-medium">IBAN:</span> {form.user.iban || 'Girilmemiş'}</p>
-                                        <p><span className="font-medium">Para Birimi:</span> {(form.user as any).currency || 'TRY'}</p>
+                                    <div className="text-xs text-slate-600 space-y-1.5 bg-slate-50/80 p-4 rounded-xl border border-slate-100">
+                                        {(form.user as any).bankName && <p><span className="font-semibold text-slate-400 w-16 inline-block">Banka:</span> <span className="font-medium text-slate-800">{(form.user as any).bankName} {(form.user as any).bankBranch && `(${(form.user as any).bankBranch})`}</span></p>}
+                                        {(form.user as any).accountHolder && <p><span className="font-semibold text-slate-400 w-16 inline-block">Sahibi:</span> <span className="font-medium text-slate-800">{(form.user as any).accountHolder}</span></p>}
+                                        <p className="break-all pt-1 mt-1 border-t border-slate-200/50"><span className="font-semibold text-slate-400 block mb-1">IBAN:</span> <span className="font-mono bg-white px-2 py-1 rounded border border-slate-200/50 text-slate-800 font-medium">{form.user.iban || 'Girilmemiş'}</span></p>
+                                        <p className="mt-2"><span className="font-semibold text-slate-400 w-16 inline-block">Birim:</span> <span className="font-bold text-slate-800">{(form.user as any).currency || 'TRY'}</span></p>
                                     </div>
                                 </div>
                             </div>
 
                             {form.user.organization && (
                                 <>
-                                    <Separator />
-                                    <div>
-                                        <div className="text-xs text-muted-foreground mb-1">Organizasyon</div>
-                                        <div className="font-medium text-sm">{form.user.organization.name}</div>
+                                    <Separator className="bg-slate-100" />
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Bağlı Organizasyon</div>
+                                        <div className="font-bold text-slate-800 text-sm">{form.user.organization.name}</div>
                                     </div>
                                 </>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
                     {/* Helpful Actions / Notes maybe? */}
-                    <Card className="bg-blue-50/50 border-blue-100 shadow-none">
-                        <CardContent className="p-4">
-                            <div className="text-sm text-blue-800">
-                                <p className="mb-2"><strong>Denetim İpuçları:</strong></p>
-                                <ul className="list-disc pl-4 space-y-1 text-xs">
-                                    <li>Mali değeri olmayan fişleri kontrol edin (Bilgi Fişi vb).</li>
-                                    <li>Mükerrer harcama olup olmadığını inceleyin.</li>
-                                    <li>IBAN bilgisinin doğruluğunu teyit edin.</li>
-                                </ul>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5">
+                        <div className="text-sm text-indigo-900">
+                            <p className="mb-3 font-bold flex items-center gap-2">
+                                <CheckCircle2 className="w-5 h-5 text-indigo-500" />
+                                Denetim İpuçları:
+                            </p>
+                            <ul className="list-disc pl-5 space-y-2 text-xs font-medium text-indigo-800/80">
+                                <li>Mali değeri olmayan fişleri kontrol edin (Bilgi Fişi vb).</li>
+                                <li>Mükerrer harcama olup olmadığını inceleyin.</li>
+                                <li>IBAN bilgisinin doğruluğunu teyit edin.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
             </div>

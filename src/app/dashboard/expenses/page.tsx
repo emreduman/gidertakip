@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { ExpenseHistoryFilter } from "@/components/expenses/expense-history-filter"
-import { ExpenseGroup } from "@/components/expenses/expense-group"
+import { ExpenseListClient } from "@/components/expenses/expense-list-client"
 import { ExportButton } from "@/components/expenses/export-button"
 
 export default async function ExpensesPage(props: { searchParams: Promise<{ status?: string, month?: string }> }) {
@@ -50,15 +50,20 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
     });
 
     return (
-        <div className="w-full space-y-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Harcama Geçmişi</h1>
-                <div className="flex gap-2">
-                    <ExportButton />
-                    <Link href="/dashboard/expenses/create">
-                        <Button className="hidden md:flex">+ Yeni Harcama</Button>
-                        <Button className="md:hidden fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl z-50 p-0 flex items-center justify-center bg-blue-600 hover:bg-blue-700">
-                            <Plus className="h-8 w-8" />
+        <div className="w-full space-y-6 pb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Harcama Geçmişi</h1>
+                    <p className="text-slate-500 mt-1">Tüm harcama kayıtlarınızı ve faturalarınızı yönetin</p>
+                </div>
+                <div className="flex gap-3 w-full md:w-auto">
+                    <div className="flex-1 md:flex-none">
+                        <ExportButton />
+                    </div>
+                    <Link href="/dashboard/expenses/create" className="flex-1 md:flex-none">
+                        <Button className="w-full hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">+ Yeni Harcama</Button>
+                        <Button className="md:hidden fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl shadow-indigo-600/40 z-50 p-0 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white transition-transform active:scale-95">
+                            <Plus className="h-7 w-7" />
                         </Button>
                     </Link>
                 </div>
@@ -67,17 +72,7 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
             {/* Filter Component */}
             <ExpenseHistoryFilter />
 
-            <div className="space-y-8">
-                {Object.keys(groupedExpenses).length === 0 ? (
-                    <div className="text-center p-10 bg-gray-50 rounded border">
-                        <p className="text-gray-500">Kriterlere uygun harcama bulunamadı.</p>
-                    </div>
-                ) : (
-                    Object.entries(groupedExpenses).map(([period, items]) => (
-                        <ExpenseGroup key={period} title={period} expenses={items} />
-                    ))
-                )}
-            </div>
+            <ExpenseListClient groupedExpenses={groupedExpenses} />
         </div>
     )
 }

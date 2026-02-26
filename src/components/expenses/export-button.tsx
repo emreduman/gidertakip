@@ -9,47 +9,59 @@ import { exportExpensesAction } from "@/lib/expense-actions";
 
 export function ExportButton() {
     const searchParams = useSearchParams();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<string | null>(null);
 
-    const handleExport = async () => {
-        setLoading(true);
+    const handleExport = (type: 'standard' | 'parasut') => {
+        setLoading(type);
         try {
-            const params = {
-                status: searchParams.get('status') || undefined,
-                month: searchParams.get('month') || undefined
-            };
+            const status = searchParams.get('status');
+            const month = searchParams.get('month');
 
-            const result = await exportExpensesAction(params);
+            const params = new URLSearchParams();
+            if (status && status !== 'ALL') params.append('status', status);
+            if (month) params.append('month', month);
 
-            if ('message' in result) {
-                toast.error(result.message);
-                return;
-            }
+            const endpoint = type === 'parasut' ? '/api/export/parasut' : '/api/export/excel';
+            const url = `${endpoint}?${params.toString()}`;
 
-            if (result.csv) {
-                // Create download link
-                const blob = new Blob([result.csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', result.filename);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                toast.success("Dışa aktarma başarılı.");
-            }
+            // Navigate to the API route to trigger the download
+            window.location.href = url;
+
+            setTimeout(() => {
+                setLoading(null);
+                toast.success(type === 'parasut' ? "Paraşüt Excel indiriliyor." : "Excel indiriliyor.");
+            }, 2000);
+
         } catch (error) {
             console.error("Export error", error);
-            toast.error("Dışa aktarma sırasında hata oluştu.");
-        } finally {
-            setLoading(false);
+            toast.error("Dışa aktarma başlatılırken hata oluştu.");
+            setLoading(null);
         }
     };
 
     return (
-        <Button variant="outline" onClick={handleExport} disabled={loading} className="gap-2">
-            <Download className="h-4 w-4" />
-            {loading ? "İndiriliyor..." : "Excel / CSV İndir"}
-        </Button>
+        <div className="flex gap-2 relative">
+            <Button
+                variant="outline"
+                onClick={() => handleExport('standard')}
+                disabled={loading !== null}
+                className="gap-2"
+                title="Sistemdeki tüm verilerle standart Excel formatında indir"
+            >
+                <Download className="h-4 w-4" />
+                {loading === 'standard' ? "İndiriliyor..." : "Excel / CSV"}
+            </Button>
+
+            <Button
+                variant="outline"
+                onClick={() => handleExport('parasut')}
+                disabled={loading !== null}
+                className="gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800"
+                title="Paraşüt İçe Aktarma - Gider Fişi/Faturası Şablonuna uygun indir"
+            >
+                <Download className="h-4 w-4" />
+                {loading === 'parasut' ? "İndiriliyor..." : "Paraşüt Şablonu"}
+            </Button>
+        </div>
     );
 }
