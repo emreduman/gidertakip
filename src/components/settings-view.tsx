@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { updateAISettings, updateSMTPSettings, addRSSFeed, removeRSSFeed } from "@/actions/settings"
-import { Loader2, Plus, Trash2, CheckCircle2 } from "lucide-react"
+import { Loader2, Plus, Trash2 } from "lucide-react"
+import FileManager from "./settings/file-manager";
 
 export default function SettingsTabs({ settings, organizationId }: { settings: any, organizationId: string }) {
-    const [activeTab, setActiveTab] = useState('ai');
+    const [activeTab, setActiveTab] = useState('files');
     const [loading, setLoading] = useState(false);
-    // const { toast } = useToast(); // Removed
 
     // AI Forms State
     const [aiForm, setAiForm] = useState({
@@ -71,7 +71,6 @@ export default function SettingsTabs({ settings, organizationId }: { settings: a
             toast.success("Başarılı", { description: "RSS kaynağı eklendi. Sayfayı yenileyerek listeyi görebilirsiniz." });
             setRssName('');
             setRssUrl('');
-            // Optimistic update isn't strictly necessary if revalidatePath works, but let's do simple reload or just wait for server action reval
         } catch (error) {
             toast.error("Hata", { description: "RSS eklenemedi." });
         } finally {
@@ -92,24 +91,29 @@ export default function SettingsTabs({ settings, organizationId }: { settings: a
 
     return (
         <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
-
             {/* Custom Tabs Header */}
-            <div className="flex space-x-1 bg-muted p-1 rounded-lg">
-                {['ai', 'smtp', 'rss'].map(tab => (
+            <div className="flex space-x-1 bg-muted p-1 rounded-lg overflow-x-auto">
+                {['files', 'ai', 'smtp', 'rss'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${activeTab === tab
+                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab
                             ? 'bg-background shadow text-foreground'
                             : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                             }`}
                     >
+                        {tab === 'files' && '📂 Dosya Yöneticisi'}
                         {tab === 'ai' && '🤖 Yapay Zeka & Tokenlar'}
                         {tab === 'smtp' && '📧 E-posta & SMTP'}
                         {tab === 'rss' && '📰 Vergi & Mevzuat RSS'}
                     </button>
                 ))}
             </div>
+
+            {/* File Manager Tab */}
+            {activeTab === 'files' && (
+                <FileManager organizationId={organizationId} />
+            )}
 
             {/* AI Settings Tab */}
             {activeTab === 'ai' && (
