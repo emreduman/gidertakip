@@ -75,7 +75,17 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
         e.preventDefault();
         setIsDragging(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
+            const droppedFile = e.dataTransfer.files[0];
+            handleFile(droppedFile);
+
+            // Assign to native input for FormData submission
+            const fileInput = document.getElementById('receipt') as HTMLInputElement;
+            if (fileInput) {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(droppedFile);
+                fileInput.files = dataTransfer.files;
+            }
+
             e.dataTransfer.clearData();
         }
     };
@@ -189,15 +199,6 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                                 </p>
                                 <p className="text-sm text-slate-500 mt-1">PNG, JPG, PDF (Maks. 5MB)</p>
 
-                                <Input
-                                    id="receipt"
-                                    name="receipt"
-                                    type="file"
-                                    accept="image/*,application/pdf"
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                />
-
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -225,7 +226,13 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                             {!isParsing && (
                                 <button
                                     type="button"
-                                    onClick={() => { setPreview(null); setFile(null); setParsedData(null); }}
+                                    onClick={() => {
+                                        setPreview(null);
+                                        setFile(null);
+                                        setParsedData(null);
+                                        const fileInput = document.getElementById('receipt') as HTMLInputElement;
+                                        if (fileInput) fileInput.value = '';
+                                    }}
                                     className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 backdrop-blur-md transition-colors"
                                     title="Görseli Değiştir"
                                 >
@@ -235,7 +242,16 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                         </div>
                     )}
 
-                    {/* Hidden Input for Camera Capture */}
+                    {/* Hidden Inputs for File Upload - Must remain outside conditional render to be included in FormData */}
+                    <Input
+                        id="receipt"
+                        name="receipt"
+                        type="file"
+                        accept="image/*,application/pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        form="create_expense_form"
+                    />
                     <input
                         type="file"
                         id="camera_receipt"
@@ -244,6 +260,7 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                         capture="environment"
                         className="hidden"
                         onChange={handleFileChange}
+                        form="create_expense_form"
                     />
 
                     {preview && (

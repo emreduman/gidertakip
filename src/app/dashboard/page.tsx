@@ -152,9 +152,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
     return (
         <main className="space-y-6 pb-8">
             {/* Premium Header */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-800 to-indigo-950 p-6 shadow-lg text-white mb-8">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="relative z-30 overflow-visible rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-800 to-indigo-950 p-6 shadow-lg text-white mb-6">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+                <div className="relative z-40 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight mb-1">Harcama Özeti</h1>
                         <p className="text-indigo-200 font-medium">
@@ -176,7 +176,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
             </div>
 
             {/* Filters */}
-            <div className="w-full bg-white p-2 rounded-2xl shadow-sm border border-slate-100 relative z-20 -mt-10 mx-auto max-w-5xl">
+            <div className="w-full bg-white p-2 rounded-2xl shadow-sm border border-slate-100 relative z-20 mx-auto max-w-5xl">
                 <React.Suspense fallback={<div className="h-14 bg-gray-100 rounded-lg animate-pulse" />}>
                     <DashboardFilters />
                 </React.Suspense>

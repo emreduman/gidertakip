@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,12 @@ export function CreateFormWizard({
     const [receiptsDelivered, setReceiptsDelivered] = useState("no");
     const [infoVerified, setInfoVerified] = useState(false);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
+    // Re-sync selections if the underlying list changes (e.g. changing user)
+    useEffect(() => {
+        setSelectedExpenseIds(pendingExpenses.map(e => e.id));
+    }, [pendingExpenses]);
 
     // State for Org, Project, Period
     const [selectedOrgId, setSelectedOrgId] = useState<string>(user?.organization?.id || "");
@@ -56,8 +62,6 @@ export function CreateFormWizard({
     const totalAmount = pendingExpenses
         .filter(e => selectedExpenseIds.includes(e.id))
         .reduce((sum, e) => sum + Number(e.amount), 0);
-
-    const router = useRouter();
 
     const handleSubmit = async (formData: FormData) => {
         setLoading(true);
@@ -140,7 +144,8 @@ export function CreateFormWizard({
                         className="flex h-11 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
                         value={selectedUserId || ''}
                         onChange={(e) => {
-                            window.location.href = `/dashboard/forms/create?userId=${e.target.value}`;
+                            router.push(`/dashboard/forms/create?userId=${e.target.value}`);
+                            router.refresh();
                         }}
                     >
                         <option value="">Kullanıcı Seçiniz</option>
@@ -311,6 +316,7 @@ export function CreateFormWizard({
                                 <tr>
                                     <th className="px-4 py-3 w-12 text-center"></th>
                                     <th className="px-4 py-3">Tarih</th>
+                                    <th className="px-4 py-3">Belge</th>
                                     <th className="px-4 py-3">İşyeri</th>
                                     <th className="px-4 py-3">Kategori</th>
                                     <th className="px-4 py-3 text-right">Tutar</th>
@@ -332,6 +338,22 @@ export function CreateFormWizard({
                                             />
                                         </td>
                                         <td className="px-4 py-3 text-slate-500">{new Date(expense.date).toLocaleDateString('tr-TR')}</td>
+                                        <td className="px-4 py-3">
+                                            {expense.receiptUrl ? (
+                                                <a
+                                                    href={expense.receiptUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-medium text-xs"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    title="Fişi Görüntüle"
+                                                >
+                                                    Belge
+                                                </a>
+                                            ) : (
+                                                <span className="text-slate-300 text-xs">-</span>
+                                            )}
+                                        </td>
                                         <td className="px-4 py-3 font-semibold text-slate-700">{expense.merchant || '-'}</td>
                                         <td className="px-4 py-3">
                                             <span className="inline-block bg-slate-100 text-slate-600 rounded-md px-2 py-0.5 text-xs font-medium">
@@ -345,7 +367,7 @@ export function CreateFormWizard({
                                 ))}
                                 {pendingExpenses.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="text-center text-slate-400 py-8 italic bg-slate-50/50">
+                                        <td colSpan={6} className="text-center text-slate-400 py-8 italic bg-slate-50/50">
                                             Bu kullanıcı için bekleyen harcama yok.
                                         </td>
                                     </tr>
@@ -435,8 +457,8 @@ export function CreateFormWizard({
                 <Button
                     size="lg"
                     className={`w-full text-lg h-16 font-bold shadow-2xl transition-all duration-300 rounded-2xl ${infoVerified && selectedExpenseIds.length > 0 && !loading
-                            ? 'bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1'
-                            : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                        ? 'bg-gradient-to-r from-indigo-600 to-teal-500 hover:from-indigo-700 hover:to-teal-600 text-white shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1'
+                        : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                         }`}
                     disabled={loading || selectedExpenseIds.length === 0 || !infoVerified}
                 >
