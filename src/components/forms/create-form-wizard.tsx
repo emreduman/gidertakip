@@ -144,8 +144,7 @@ export function CreateFormWizard({
                         className="flex h-11 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
                         value={selectedUserId || ''}
                         onChange={(e) => {
-                            router.push(`/dashboard/forms/create?userId=${e.target.value}`);
-                            router.refresh();
+                            window.location.href = `/dashboard/forms/create?userId=${e.target.value}`;
                         }}
                     >
                         <option value="">Kullanıcı Seçiniz</option>

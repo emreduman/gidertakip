@@ -155,11 +155,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
             <div className="relative z-30 overflow-visible rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-800 to-indigo-950 p-6 shadow-lg text-white mb-6">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
                 <div className="relative z-40 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight mb-1">Harcama Özeti</h1>
-                        <p className="text-indigo-200 font-medium">
-                            {year} yılı {period === 'all' ? 'genel özeti' : `${period} dönemi özeti`}
-                        </p>
+                    {/* Header Title & Mobile Bell */}
+                    <div className="flex justify-between items-start w-full md:w-auto">
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight mb-1">Harcama Özeti</h1>
+                            <p className="text-indigo-200 font-medium flex-wrap">
+                                {year} yılı {period === 'all' ? 'genel özeti' : `${period} dönemi özeti`}
+                            </p>
+                        </div>
+                        {/* Mobile Notification Bell */}
+                        <div className="block md:hidden bg-white/10 p-2 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors shrink-0">
+                            <NotificationBell />
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -168,7 +175,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ y
                             Hoş geldin, <Link href="/dashboard/profile" className="font-semibold text-white hover:text-indigo-200 transition-colors">{session?.user?.name}</Link>
                         </div>
                         {/* Desktop Notification Bell */}
-                        <div className="hidden md:block bg-white/10 p-2 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors">
+                        <div className="hidden md:block bg-white/10 p-2 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors shrink-0">
                             <NotificationBell />
                         </div>
                     </div>

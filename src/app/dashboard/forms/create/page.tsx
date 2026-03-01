@@ -4,6 +4,8 @@ import { CreateFormWizard } from "@/components/forms/create-form-wizard"
 
 // ... imports
 
+export const dynamic = 'force-dynamic';
+
 export default async function CreateFormPage(props: { searchParams: Promise<{ userId?: string }> }) {
     const searchParams = await props.searchParams;
     const session = await auth();
