@@ -44,10 +44,19 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
         orderBy: { date: 'desc' }
     });
 
-    // Group by Month-Year (e.g. "Ocak 2026")
-    const groupedExpenses: { [key: string]: typeof expenses } = {};
+    // The `ExpenseListClient` expects serializable data.
+    // Convert Prisma Decimal to standard JS numbers.
+    const serializedExpenses = expenses.map(expense => ({
+        ...expense,
+        amount: Number(expense.amount),
+        taxRate: expense.taxRate ? Number(expense.taxRate) : null,
+        taxAmount: expense.taxAmount ? Number(expense.taxAmount) : null,
+    }));
 
-    expenses.forEach(expense => {
+    // Group by Month-Year (e.g. "Ocak 2026")
+    const groupedExpenses: { [key: string]: typeof serializedExpenses } = {};
+
+    serializedExpenses.forEach(expense => {
         const date = new Date(expense.date);
         const key = date.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
         if (!groupedExpenses[key]) {

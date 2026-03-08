@@ -6,7 +6,7 @@ import { ExpenseGroup } from "./expense-group";
 import { BulkActions } from "./bulk-actions";
 
 interface ExpenseListClientProps {
-    groupedExpenses: Record<string, Expense[]>;
+    groupedExpenses: Record<string, any[]>;
 }
 
 export function ExpenseListClient({ groupedExpenses }: ExpenseListClientProps) {
