@@ -81,6 +81,24 @@ export async function saveBotIntegrationAction(data: {
   }
 }
 
+export async function getBotTargetUsersAction() {
+  const session = await auth();
+  if (!session?.user?.id || (session.user.role !== "ADMIN" && session.user.role !== "OWNER")) {
+    return { success: false, error: "Yetkisiz erişim" };
+  }
+
+  try {
+    const users = await prisma.user.findMany({
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    });
+    return { success: true, users };
+  } catch (error: any) {
+    console.error("Get target users error:", error);
+    return { success: false, error: "Failed to fetch users" };
+  }
+}
+
 export async function deleteBotIntegrationAction(id: string) {
   const session = await auth();
   if (!session?.user?.id || (session.user.role !== "ADMIN" && session.user.role !== "OWNER")) {

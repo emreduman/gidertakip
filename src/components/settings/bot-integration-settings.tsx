@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { getBotIntegrationsAction, saveBotIntegrationAction, deleteBotIntegrationAction } from "@/actions/bot-integrations";
+import { getBotIntegrationsAction, saveBotIntegrationAction, deleteBotIntegrationAction, getBotTargetUsersAction } from "@/actions/bot-integrations";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Edit, Bot } from "lucide-react";
 
@@ -18,7 +18,6 @@ export default function BotIntegrationSettings() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   
-  // Need to fetch users so admin can pick who gets the bot integration
   const [users, setUsers] = useState<any[]>([]);
 
   const defaultForm = {
@@ -43,19 +42,20 @@ export default function BotIntegrationSettings() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await getBotIntegrationsAction();
+      const [res, usersRes] = await Promise.all([
+         getBotIntegrationsAction(),
+         getBotTargetUsersAction()
+      ]);
+      
       if (res.success) {
         setIntegrations(res.integrations || []);
       } else {
         toast.error("Hata", { description: res.error });
       }
 
-      // Fetch users for the dropdown (in a real app, this should be a dedicated admin action or combobox)
-      // For now we'll fetch them from an existing API or just rely on a simple text input if API isn't ready.
-      // Since I don't have a direct "get all users" action available in this scope, I'll let the admin type the user ID
-      // or we can fetch them via a generic action if we build one. Let's make it a text input for User ID for now, 
-      // or ideally we'd have a User select. I will leave it as a text input for the `userId` for simplicity in this prototype.
-      
+      if (usersRes.success && usersRes.users) {
+         setUsers(usersRes.users);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -136,13 +136,19 @@ export default function BotIntegrationSettings() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Kullanıcı ID <span className="text-red-500">*</span></Label>
-                <Input 
-                  value={form.userId} 
-                  onChange={(e) => setForm({...form, userId: e.target.value})} 
-                  placeholder="Kullanıcının sistem veritabanı ID'si" 
-                  disabled={!!form.id} // Don't allow changing user on edit
-                />
+                <Label>Kullanıcı <span className="text-red-500">*</span></Label>
+                <Select value={form.userId} onValueChange={(v) => setForm({...form, userId: v})} disabled={!!form.id}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Bir kullanıcı seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>
+                        {u.name || "İsimsiz"} ({u.email})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>Platform</Label>

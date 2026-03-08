@@ -39,8 +39,15 @@ export default async function CreateFormPage(props: { searchParams: Promise<{ us
     const serializedExpenses = pendingExpenses.map(expense => ({
         ...expense,
         amount: Number(expense.amount),
+        taxRate: expense.taxRate ? Number(expense.taxRate) : null,
+        taxAmount: expense.taxAmount ? Number(expense.taxAmount) : null,
         period: {
             ...expense.period,
+            budget: expense.period.budget ? Number(expense.period.budget) : null,
+            project: {
+                ...expense.period.project,
+                budget: expense.period.project.budget ? Number(expense.period.project.budget) : null
+            }
         }
     }));
 
@@ -70,7 +77,14 @@ export default async function CreateFormPage(props: { searchParams: Promise<{ us
     const serializedOrganizations = organizations.map(org => ({
         ...org,
         policies: org.policies.map((p: any) => ({ ...p, maxAmount: Number(p.maxAmount) })),
-        projects: org.projects || []
+        projects: org.projects?.map(project => ({
+            ...project,
+            budget: project.budget ? Number(project.budget) : null,
+            periods: project.periods?.map(period => ({
+                ...period,
+                budget: period.budget ? Number(period.budget) : null
+            })) || []
+        })) || []
     }));
 
     const serializedUser = user ? {
