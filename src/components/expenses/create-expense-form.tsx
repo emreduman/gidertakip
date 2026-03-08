@@ -242,26 +242,7 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
                         </div>
                     )}
 
-                    {/* Hidden Inputs for File Upload - Must remain outside conditional render to be included in FormData */}
-                    <Input
-                        id="receipt"
-                        name="receipt"
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={handleFileChange}
-                        className="hidden"
-                        form="create_expense_form"
-                    />
-                    <input
-                        type="file"
-                        id="camera_receipt"
-                        name="camera_receipt"
-                        accept="image/*"
-                        capture="environment"
-                        className="hidden"
-                        onChange={handleFileChange}
-                        form="create_expense_form"
-                    />
+
 
                     {preview && (
                         <div className="mt-4">
@@ -291,6 +272,25 @@ export function CreateExpenseForm({ users }: { users?: any[] }) {
             {/* Right: Form Details */}
             <div className="col-span-1 lg:col-span-7">
                 <form id="create_expense_form" action={formAction} className="space-y-6 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 relative transition-all hover:shadow-md">
+                    {/* Hidden Inputs for File Upload */}
+                    <Input
+                        id="receipt"
+                        name="receipt"
+                        type="file"
+                        accept="image/*,application/pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                    />
+                    <input
+                        type="file"
+                        id="camera_receipt"
+                        name="camera_receipt"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
+
                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
                     <div className="flex items-center justify-between mb-2">

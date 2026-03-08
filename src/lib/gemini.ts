@@ -20,7 +20,7 @@ export interface ParsedExpense {
 export async function parseReceipt(
     imagePart: { inlineData: { data: string; mimeType: string } }
 ): Promise<ParsedExpense> {
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     const prompt = `
     Analyze this receipt/document (image or PDF) and extract the following information in JSON format:
@@ -42,56 +42,78 @@ export async function parseReceipt(
     3. If 'isInfoSlip' is true, add a warning: "Bu belge bilgi fişidir, mali değeri yoktur."
   `;
 
-    try {
-        const result = await model.generateContent([prompt, imagePart]);
-        const response = await result.response;
-        const text = response.text();
+    let attempt = 0;
+    const maxRetries = 3;
+    let lastError: any = null;
 
-        console.log("Gemini Raw Response:", text); // Debug log
-
-        // Clean up markdown code blocks if present
-        const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
-
+    while (attempt < maxRetries) {
         try {
-            const data = JSON.parse(cleanText);
+            const result = await model.generateContent([prompt, imagePart]);
+            const response = await result.response;
+            const text = response.text();
 
-            const warnings: string[] = [];
-            let amount = data.amount;
+            console.log("Gemini Raw Response:", text); // Debug log
 
-            if (data.isInfoSlip) {
-                amount = 0;
-                warnings.push("Bu belge bilgi fişidir, mali değeri yoktur.");
+            // Clean up markdown code blocks if present //
+            const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+            try {
+                const data = JSON.parse(cleanText);
+
+                const warnings: string[] = [];
+                let amount = data.amount;
+
+                if (data.isInfoSlip) {
+                    amount = 0;
+                    warnings.push("Bu belge bilgi fişidir, mali değeri yoktur.");
+                }
+
+                if (data.isBoardingPass) {
+                    warnings.push("Lütfen biniş kartınızı saklayınız.");
+                }
+
+                return {
+                    date: data.date,
+                    amount: amount,
+                    currency: data.currency || "TRY",
+                    category: data.category,
+                    description: data.description,
+                    merchant: data.merchant,
+                    taxRate: data.taxRate,
+                    taxAmount: data.taxAmount,
+                    confidence: data.confidence || 50,
+                    warnings: warnings,
+                    isBoardingPass: data.isBoardingPass || false,
+                    rawResponse: data
+                };
+            } catch (jsonError) {
+                console.error("JSON Parse Error:", jsonError);
+                throw new Error(`AI yanıtı okunamadı: ${text.substring(0, 50)}...`);
             }
 
-            if (data.isBoardingPass) {
-                warnings.push("Lütfen biniş kartınızı saklayınız.");
+        } catch (error: any) {
+            console.error(`Error parsing receipt with Gemini (Attempt ${attempt + 1}/${maxRetries}):`, error);
+            lastError = error;
+            
+            const msg = error?.response?.data?.error?.message || error.message || "";
+            // Check if it's a 503 or 429 error, which indicates temporary unavailability or rate limit
+            if (msg.includes("503") || msg.includes("429") || msg.includes("Service Unavailable") || msg.includes("overloaded") || msg.includes("high demand")) {
+                attempt++;
+                if (attempt < maxRetries) {
+                    const backoffMs = attempt * 2000;
+                    console.log(`Gemini API overloaded. Retrying in ${backoffMs} ms...`);
+                    await new Promise(resolve => setTimeout(resolve, backoffMs));
+                    continue;
+                }
             }
-
-            return {
-                date: data.date,
-                amount: amount,
-                currency: data.currency || "TRY",
-                category: data.category,
-                description: data.description,
-                merchant: data.merchant,
-                taxRate: data.taxRate,
-                taxAmount: data.taxAmount,
-                confidence: data.confidence || 50,
-                warnings: warnings,
-                isBoardingPass: data.isBoardingPass || false,
-                rawResponse: data
-            };
-        } catch (jsonError) {
-            console.error("JSON Parse Error:", jsonError);
-            throw new Error(`AI yanıtı okunamadı: ${text.substring(0, 50)}...`);
+            // If it's a different error or we've exhausted retries, break out
+            break;
         }
-
-    } catch (error: any) {
-        console.error("Error parsing receipt with Gemini:", error);
-        // Extract meaningful message
-        const msg = error?.response?.data?.error?.message || error.message || "Bilinmeyen hata";
-        throw new Error(`AI Servis Hatası: ${msg}`);
     }
+
+    // Extract meaningful message from the last error
+    const msg = lastError?.response?.data?.error?.message || lastError?.message || "Bilinmeyen hata";
+    throw new Error(`AI Servis Hatası: ${msg}`);
 }
 
 export async function analyzeReceiptWithGemini(
