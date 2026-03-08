@@ -18,7 +18,8 @@ export interface ParsedExpense {
 }
 
 export async function parseReceipt(
-    imagePart: { inlineData: { data: string; mimeType: string } }
+    imagePart: { inlineData: { data: string; mimeType: string } },
+    customPrompt?: string | null
 ): Promise<ParsedExpense> {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
@@ -40,6 +41,12 @@ export async function parseReceipt(
     1. If 'isInfoSlip' is true, set the amount to 0.
     2. If 'isBoardingPass' is true, add a warning: "Lütfen biniş kartınızı saklayınız."
     3. If 'isInfoSlip' is true, add a warning: "Bu belge bilgi fişidir, mali değeri yoktur."
+
+    ${customPrompt ? `---
+    Custom Bot Persona/Instructions:
+    ${customPrompt}
+    (Keep this persona in mind or reflect it in warnings/description if specifically requested, but you must still output strictly valid JSON matching the requested structure).
+    ---` : ''}
   `;
 
     let attempt = 0;
@@ -119,7 +126,8 @@ export async function parseReceipt(
 export async function analyzeReceiptWithGemini(
     fileUrl: string,
     mimeType: string,
-    fileBuffer: Buffer
+    fileBuffer: Buffer,
+    customPrompt?: string | null
 ): Promise<{
     date: Date;
     amount: number;
@@ -140,7 +148,7 @@ export async function analyzeReceiptWithGemini(
             data: base64Data,
             mimeType: mimeType
         }
-    });
+    }, customPrompt);
 
     // Handle date formatting
     let parsedDate = new Date();

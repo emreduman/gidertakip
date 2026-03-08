@@ -95,7 +95,9 @@ model User {
   
   // For auditing who processed a form
   processedForms ExpenseForm[] @relation("ProcessedBy")
-  
+  // Bot Integration
+  botIntegration BotIntegration?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -312,4 +314,28 @@ model RssFeed {
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model BotIntegration {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  platform         String   // "TELEGRAM", "OPENCLAW", "WHATSAPP", "CUSTOM"
+  chatId           String?  // The unique ID from the platform (e.g., Telegram Chat ID)
+  isActive         Boolean  @default(true)
+  
+  // Permissions (JSON or boolean flags)
+  canReadExpenses  Boolean  @default(true)
+  canWriteExpenses Boolean  @default(false)
+  canReadBudget    Boolean  @default(true)
+  canReadReports   Boolean  @default(false)
+  
+  // Custom Persona / Prompt Injection per user (optional for "ayrı bir bot cevabı")
+  customPrompt     String?  @db.Text
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@index([platform, chatId])
 }

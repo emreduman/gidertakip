@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { updateAISettings, updateSMTPSettings, addRSSFeed, removeRSSFeed } from "@/actions/settings"
 import { Loader2, Plus, Trash2 } from "lucide-react"
 import FileManager from "./settings/file-manager";
+import BotIntegrationSettings from "./settings/bot-integration-settings";
 
 export default function SettingsTabs({ settings, organizationId }: { settings: any, organizationId: string }) {
     const [activeTab, setActiveTab] = useState('files');
@@ -93,7 +94,7 @@ export default function SettingsTabs({ settings, organizationId }: { settings: a
         <div className="w-full max-w-4xl mx-auto p-4 space-y-8">
             {/* Custom Tabs Header */}
             <div className="flex space-x-1 bg-muted p-1 rounded-lg overflow-x-auto">
-                {['files', 'ai', 'smtp', 'rss'].map(tab => (
+                {['files', 'ai', 'smtp', 'rss', 'bot'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -106,6 +107,7 @@ export default function SettingsTabs({ settings, organizationId }: { settings: a
                         {tab === 'ai' && '🤖 Yapay Zeka & Tokenlar'}
                         {tab === 'smtp' && '📧 E-posta & SMTP'}
                         {tab === 'rss' && '📰 Vergi & Mevzuat RSS'}
+                        {tab === 'bot' && '👾 Bot Bağlantıları'}
                     </button>
                 ))}
             </div>
@@ -324,6 +326,11 @@ export default function SettingsTabs({ settings, organizationId }: { settings: a
                         </CardContent>
                     </Card>
                 </div>
+            )}
+
+            {/* Bot Settings Tab */}
+            {activeTab === 'bot' && (
+                <BotIntegrationSettings />
             )}
         </div>
     );

@@ -37,30 +37,35 @@ export async function POST(req: NextRequest) {
 
         const chatId = body.message.chat.id.toString();
 
-        // Security: Ensure only the authorized user can interact with the bot
-        if (!AUTHORIZED_CHAT_ID || chatId !== AUTHORIZED_CHAT_ID) {
-            console.warn(`Unauthorized access attempt from Chat ID: ${chatId}`);
-            // Do not reply to unauthorized users to avoid exposing the bot, or send a generic polite denial
-            return NextResponse.json({ success: true, message: "Unauthorized" });
-        }
-
-        // We need a user to tie expenses to. Easiest way is to find a user by their ID or the first user in the system if this is a personal app.
-        // Let's assume the user's email is stored in an env var for this explicit connection, or we just grab the first admin/owner.
-        const user = await prisma.user.findFirst({
-            where: { role: { in: ['ADMIN', 'OWNER'] } },
-            orderBy: { createdAt: 'asc' }
+        // Security: Find if this Chat ID is registered and active in our BotIntegration table
+        const integration = await prisma.botIntegration.findFirst({
+            where: { 
+                chatId, 
+                platform: 'TELEGRAM',
+                isActive: true
+            },
+            include: { user: true }
         });
 
-        if (!user) {
-            await sendTelegramMessage(chatId, "Sistemde hesaba bağlanacak yetkili bir kullanıcı bulunamadı.");
-            return NextResponse.json({ success: false });
+        if (!integration || !integration.user) {
+            console.warn(`Unauthorized or inactive bot access attempt from Chat ID: ${chatId}`);
+            // Do not reply to unauthorized users to avoid exposing the bot, or send a generic polite denial
+            return NextResponse.json({ success: true, message: "Unauthorized or disabled" });
         }
+
+        const user = integration.user;
+        const perms = integration; // Aliasing for easier reading of permissions
 
         const messageText = body.message.text || "";
         const photos = body.message.photo;
 
         // 1. Handle Images (Receipt Uploads)
         if (photos && photos.length > 0) {
+            if (!perms.canWriteExpenses) {
+                await sendTelegramMessage(chatId, "❌ Harcama/fiş ekleme izniniz bulunmamaktadır.");
+                return NextResponse.json({ success: true });
+            }
+
             // Send initial processing message
             await sendTelegramMessage(chatId, "📸 Fişiniz alındı, yapay zeka tarafından inceleniyor...");
 
@@ -87,8 +92,8 @@ export async function POST(req: NextRequest) {
                     contentType: 'image/jpeg'
                 });
 
-                // Analyze with Gemini
-                const parsedData = await analyzeReceiptWithGemini(blob.url, 'image/jpeg', buffer);
+                // Analyze with Gemini, passing down any custom prompt/persona the admin configured
+                const parsedData = await analyzeReceiptWithGemini(blob.url, 'image/jpeg', buffer, perms.customPrompt);
 
                 // Find active period for this organization
                 const activePeriod = await prisma.period.findFirst({
@@ -145,6 +150,11 @@ export async function POST(req: NextRequest) {
             const command = messageText.toLowerCase();
 
             if (command.includes("özet") || command.includes("harcadım")) {
+                if (!perms.canReadExpenses) {
+                    await sendTelegramMessage(chatId, "❌ Harcama özetinizi görüntüleme izniniz bulunmamaktadır.");
+                    return NextResponse.json({ success: true });
+                }
+
                 // Find total expenses for active period
                  const activePeriod = await prisma.period.findFirst({
                    where: { 
