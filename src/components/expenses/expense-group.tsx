@@ -48,6 +48,7 @@ export function ExpenseGroup({
                             </th>
                             <th className="px-4 py-2">Gün</th>
                             <th className="px-4 py-2 hidden sm:table-cell">Fiş</th>
+                            <th className="px-4 py-2 hidden md:table-cell">Kullanıcı</th>
                             <th className="px-4 py-2 hidden md:table-cell">İşyeri</th>
                             <th className="px-4 py-2 hidden lg:table-cell">Kategori</th>
                             <th className="px-4 py-2 hidden xl:table-cell">Açıklama</th>
@@ -57,7 +58,7 @@ export function ExpenseGroup({
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {expenses.map(expense => (
+                        {expenses.map((expense: any) => (
                             <tr key={expense.id} className={`hover:bg-slate-50/80 flex flex-col md:table-row p-4 md:p-0 border-b border-slate-100 md:border-none relative transition-all duration-200 ${selectedIds.includes(expense.id) ? 'bg-indigo-50/40' : ''}`}>
                                 {/* Desktop Checkbox */}
                                 <td className="hidden md:table-cell px-4 py-3 text-center align-middle">
@@ -90,7 +91,9 @@ export function ExpenseGroup({
                                             {new Date(expense.date).getDate()}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-500 md:hidden">{new Date(expense.date).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}</span>
+                                            {expense.user && (
+                                              <span className="text-xs font-semibold text-indigo-600 md:hidden">{expense.user.name || expense.user.email}</span>
+                                            )}
                                             <span className="text-sm font-medium text-gray-900 md:hidden">{expense.merchant}</span>
                                         </div>
                                     </div>
@@ -125,6 +128,19 @@ export function ExpenseGroup({
                                         <span className="text-slate-300">-</span>
                                     )}
                                 </td>
+                                
+                                <td className="px-4 py-3 hidden md:table-cell">
+                                    {expense.user ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-semibold text-slate-700">{expense.user.name || "İsimsiz"}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <span className="text-slate-400 italic">Bilinmiyor</span>
+                                    )}
+                                </td>
+
                                 <td className="px-4 py-3 font-semibold text-slate-800 hidden md:table-cell">{expense.merchant || '-'}</td>
                                 <td className="px-4 py-3 hidden lg:table-cell">
                                     <span className="inline-block bg-slate-100 text-slate-600 rounded-md px-2.5 py-1 text-xs font-medium">

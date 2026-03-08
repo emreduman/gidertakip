@@ -12,7 +12,13 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
     const session = await auth()
 
     // Build filter
-    const where: any = { userId: session?.user?.id }
+    const isAdmin = session?.user?.role === 'ADMIN' || session?.user?.role === 'OWNER';
+    const where: any = {};
+    
+    // Non-admins only see their own expenses
+    if (!isAdmin) {
+        where.userId = session?.user?.id;
+    }
 
     if (searchParams.status && searchParams.status !== 'ALL') {
         where.status = searchParams.status
@@ -34,6 +40,7 @@ export default async function ExpensesPage(props: { searchParams: Promise<{ stat
 
     const expenses = await prisma.expense.findMany({
         where,
+        include: { user: true },
         orderBy: { date: 'desc' }
     });
 

@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
 
         const where: any = { userId: session.user.id };
 
-        // Admin override to see all
-        if (session.user.role === 'ADMIN') {
+        // Admin / Owner override to see all
+        if (session.user.role === 'ADMIN' || session.user.role === 'OWNER') {
             delete where.userId;
         }
 

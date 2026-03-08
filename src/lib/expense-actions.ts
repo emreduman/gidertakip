@@ -312,7 +312,12 @@ export async function exportExpensesAction(searchParams: { status?: string, mont
     const session = await auth();
     if (!session?.user?.id) return { message: 'Not authenticated' };
 
-    const where: any = { userId: session.user.id };
+    const isAdmin = session.user.role === 'ADMIN' || session.user.role === 'OWNER';
+    const where: any = {};
+    
+    if (!isAdmin) {
+        where.userId = session.user.id;
+    }
 
     if (searchParams.status && searchParams.status !== 'ALL') {
         where.status = searchParams.status;
@@ -329,16 +334,18 @@ export async function exportExpensesAction(searchParams: { status?: string, mont
 
     const expenses = await prisma.expense.findMany({
         where,
+        include: { user: true },
         orderBy: { date: 'desc' }
     });
 
     // Generate CSV
-    const header = "Date,Merchant,Category,Amount,Currency,Status,Description\n";
+    const header = "Date,User,Merchant,Category,Amount,Currency,Status,Description\n";
     const rows = expenses.map(e => {
         const expense = e as any;
         const date = expense.date.toISOString().split('T')[0];
         const description = (expense.description || '').replace(/"/g, '""'); // Escape quotes
-        return `${date},"${expense.merchant || ''}","${expense.category || ''}",${expense.amount},"TRY",${expense.status},"${description}"`;
+        const user = expense.user ? (expense.user.name || expense.user.email || 'Bilinmeyen') : 'Bilinmeyen';
+        return `${date},"${user}","${expense.merchant || ''}","${expense.category || ''}",${expense.amount},"TRY",${expense.status},"${description}"`;
     }).join("\n");
 
     return { csv: header + rows, filename: `expenses-${new Date().toISOString().split('T')[0]}.csv` };
