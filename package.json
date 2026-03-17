@@ -33,7 +33,7 @@
     "dotenv": "^17.2.3",
     "framer-motion": "^12.27.1",
     "imap-simple": "^5.1.0",
-    "jspdf": "^4.0.0",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.562.0",
     "mailparser": "^3.9.3",
     "next": "^16.1.6",
