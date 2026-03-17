@@ -26,22 +26,30 @@ export async function createEmployee(data: {
   department?: string
   jobTitle?: string
 }) {
-  const session = await auth()
-  const orgId = (session?.user as any)?.organizationId
-  if (!orgId) throw new Error("Unauthorized")
+  try {
+    const session = await auth()
+    const orgId = (session?.user as any)?.organizationId
+    if (!orgId) return { success: false, error: "Yetki veya organizasyon bulunamadı." }
 
-  const netSalary = calculatePayroll(data.grossSalary).netSalary
+    const netSalary = calculatePayroll(data.grossSalary).netSalary
 
-  const employee = await prisma.employee.create({
-    data: {
-      ...data,
-      organizationId: orgId,
-      netSalary
+    const employee = await prisma.employee.create({
+      data: {
+        ...data,
+        organizationId: orgId,
+        netSalary
+      }
+    })
+
+    revalidatePath("/dashboard/personnel")
+    return { success: true, employee }
+  } catch (error: any) {
+    console.error("CREATE_EMPLOYEE_ERROR:", error)
+    if (error?.code === "P2021") {
+       return { success: false, error: "Veritabanı tabloları eksik. Lütfen terminalden 'npx prisma db push' komutunu çalıştırın." }
     }
-  })
-
-  revalidatePath("/dashboard/personnel")
-  return employee
+    return { success: false, error: error?.message || "Bilinmeyen bir veritabanı hatası oluştu." }
+  }
 }
 
 export async function deleteEmployee(id: string) {

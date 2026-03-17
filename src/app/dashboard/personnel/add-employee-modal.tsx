@@ -24,10 +24,16 @@ export function AddEmployeeModal() {
     e.preventDefault()
     startTransition(async () => {
       try {
-        await createEmployee({
+        const result = await createEmployee({
           ...formData,
           grossSalary: Number(formData.grossSalary) || 0
         })
+        
+        if (result?.success === false) {
+           toast.error(result.error || "Kayıt sırasında bir hata oluştu.")
+           return
+        }
+
         toast.success("Personel başarıyla kaydedildi!")
         setOpen(false)
         setFormData({
@@ -39,8 +45,9 @@ export function AddEmployeeModal() {
             department: "",
             jobTitle: ""
         })
-      } catch (error) {
-        toast.error("Bir hata oluştu")
+      } catch (error: any) {
+        toast.error(error?.message || "Beklenmeyen bir hata oluştu")
+        console.error("Personel kayıt hatası:", error)
       }
     })
   }
