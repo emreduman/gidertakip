@@ -98,6 +98,8 @@ model User {
   // Bot Integration
   botIntegration BotIntegration?
 
+  employee     Employee?   @relation("EmployeeToUser")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -120,7 +122,8 @@ model Organization {
   projects  Project[]
   policies  Policy[]
   settings  Settings?
-  
+  employees Employee[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -152,6 +155,7 @@ model Period {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   
   expenses  Expense[]
+  payrolls  Payroll[]
 
   budget    Decimal?  @db.Decimal(10, 2)
 
@@ -338,4 +342,64 @@ model BotIntegration {
   updatedAt        DateTime @updatedAt
   
   @@index([platform, chatId])
+}
+
+model Employee {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  userId         String?      @unique // Optional link to a platform User
+  user           User?        @relation("EmployeeToUser", fields: [userId], references: [id], onDelete: SetNull)
+  
+  firstName      String
+  lastName       String
+  tcNo           String?
+  ssnNo          String?      // SGK Sicil No
+  
+  grossSalary    Decimal      @db.Decimal(10, 2)
+  netSalary      Decimal?     @db.Decimal(10, 2)
+  
+  department     String?
+  jobTitle       String?
+  
+  payrolls       Payroll[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+model Payroll {
+  id             String       @id @default(cuid())
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  periodId       String?
+  period         Period?      @relation(fields: [periodId], references: [id], onDelete: SetNull)
+  
+  month          Int          // 1-12
+  year           Int          // e.g. 2024
+  
+  grossSalary    Decimal      @db.Decimal(10, 2)
+  sgkEmployeePool Decimal     @db.Decimal(10, 2) // SGK İşçi Payı (%14)
+  unemploymentEmployeePool Decimal @db.Decimal(10, 2) // İşsizlik İşçi Payı (%1)
+  incomeTaxBase  Decimal      @db.Decimal(10, 2) // Gelir Vergisi Matrahı
+  incomeTax      Decimal      @db.Decimal(10, 2) // Gelir Vergisi
+  stampTax       Decimal      @db.Decimal(10, 2) // Damga Vergisi
+  netSalary      Decimal      @db.Decimal(10, 2) // Net Maaş
+  
+  sgkEmployerPool Decimal     @db.Decimal(10, 2) // SGK İşveren Payı (%20.5 - teşvik)
+  unemploymentEmployerPool Decimal @db.Decimal(10, 2) // İşsizlik İşveren Payı (%2)
+  
+  employerTotalCost Decimal   @db.Decimal(10, 2) // İşverene Toplam Maliyet
+  
+  isPaid         Boolean      @default(false)
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([employeeId])
+  @@index([periodId])
 }

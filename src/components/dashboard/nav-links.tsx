@@ -7,7 +7,8 @@ import {
     WalletIcon,
     BanknoteIcon,
     UserCircleIcon,
-    SettingsIcon
+    SettingsIcon,
+    BriefcaseIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,6 +20,7 @@ const links = [
     { name: 'Özet', href: '/dashboard', icon: LayoutDashboardIcon },
     { name: 'Harcamalarım', href: '/dashboard/expenses', icon: WalletIcon },
     { name: 'Masraf Formları', href: '/dashboard/forms', icon: FileTextIcon },
+    { name: 'Personel & Bordro', href: '/dashboard/personnel', icon: BriefcaseIcon }, // Payroll and HR
     { name: 'Muhasebe', href: '/dashboard/accounting', icon: BanknoteIcon }, // Should be role protected later
     { name: 'Yönetim', href: '/dashboard/admin', icon: UsersIcon }, // Admin only
     { name: 'Profil', href: '/dashboard/profile', icon: UserCircleIcon },
